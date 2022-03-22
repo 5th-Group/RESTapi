@@ -1,5 +1,4 @@
 const express = require('express')
-const { route } = require('express/lib/application')
 const router = express.Router()
 const Book = require('../models/books')
 
@@ -75,11 +74,11 @@ module.exports = router*/
 // Get All
 router.get('/', async (req, res) => {
     let searchDetail = {}
-    if (req.query.name != null && req.query.name != '') {
-        searchDetail.name = new RegExp(req.query.name, 'i')
+    if (req.query.title != null && req.query.title != '') {
+        searchDetail.title = new RegExp(req.query.title, 'i')
     }
     try {
-        const books = await Book.find({searchDetail})
+        const books = await Book.find(searchDetail)
         res.render('books/index', {
             books: books,
             searchDetail: req.query
@@ -89,21 +88,22 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.get('/new', (req, res) => {
+    res.render('books/new', { book: new Book() })
+})
+
 
 router.get('/:id', getBook, (req, res) => {
     res.send(res.book)
 })
 
 
-router.get('/new', (req, res) => {
-    res.render('books/new', { book: new Book() })
-})
 
 
 // Create
 router.post('/', async (req, res) => {
     const book = new Book({
-        name: req.body.name,
+        name: req.body.title,
     })
     try {
         const newBook = await book.save()
