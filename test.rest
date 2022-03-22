@@ -1,0 +1,11 @@
+GET http://localhost:3000/books
+
+###
+
+POST http://localhost:3000/books/new
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Cum zone"
+}
