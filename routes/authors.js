@@ -4,31 +4,50 @@ const Author = require('../models/author')
 
 // Getting all
 router.get('/', async(req, res) => {
+    let searchDetail
+    if(req.query.name != null && req.query.name != '') {
+        searchDetail.name = new RegExp(req.query.name, 'i')
+    }
     try {
-        const authors = await Author.find()
-        res.send(authors)
+        const authors = await Author.find(searchDetail)
+        res.render('authors/index', 
+        {
+        authors: authors,
+        searchDetail: req.query
+        })
     } catch (err) {
         res.status(500).json({ message: err.message})
     }
 })
 
-// Getting one
-router.get('/:id', getAuthor, (req, res) => {
-    res.send(res.book.name)
+
+// GET creating page
+router.get('/new', (req, res) => {
+    res.render('authors/new', {author: new Author()})
+})
+
+
+// GET one
+router.get('/:id', getAuthor, async(req, res) => {
+    res.render('authors/detail', {author: res.author})
 })
 
 // Creating one
 router.post('/', async(req, res) => {
-    const bookId = 1
-    const book = new Book({
-        id: req.body.id,
+    const author = new Author({
         name: req.body.name,
+        origin: req.body.origin,
+        dateOfBirth: req.body.dateOfBirth,
+        biography: req.body.biography
     })
     try {
-        const newBook = await book.save()
-        res.status(201).json(newBook)
+        const newAuthor = await author.save()
+        res.redirect('/authors')
     }catch(err) {
-        res.status(400).json({ message: err.message})
+        res.render('authors/new', {
+            author: author,
+            errorMessage: err.Message
+        })
     }
 })
 
@@ -47,26 +66,8 @@ async function getAuthor(req, res, next) {
 }
 
 // Updating one
-router.patch('/:id', getAuthor, async (req, res) => {
-    if(req.body.name != null && req.body.name != '') {
-        res.book.name = req.body.name
-    }
-    try {
-        const updatedBook = await res.book.save()
-        res.json({message: 'Updated successfully'})
-    }catch (err) {
-        res.status(400).json({message: err.message})
-    }
-})
 
 // Deleting  one
-router.delete('/:id', getAuthor, async (req, res) => {
-    try {
-        await res.book.remove()
-        res.json({message: 'Deleted successfully'})
-    }catch (err) {
-        res.status(500).json({message:err.message})
-    }
-})
+
 
 module.exports = router

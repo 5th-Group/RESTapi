@@ -1,4 +1,4 @@
-GET http://localhost:3000/books
+GET http://localhost:3000/publishers
 
 ###
 
@@ -9,3 +9,7 @@ Content-Type: application/json
     "id": 1,
     "name": "Cum zone"
 }
+
+###
+
+DELETE http://localhost:3000/books/6238543d32a4eaf869f4879d

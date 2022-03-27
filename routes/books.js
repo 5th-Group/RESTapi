@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Book = require('../models/books')
+const Book = require('../models/book')
 
 /*// Getting all
 router.get('/', (req, res) => {
@@ -124,8 +124,15 @@ router.patch('/', (req, res) => {
 
 
 // Delete
-router.delete('/', (req, res) => {
-
+router.delete('/:id', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id)
+        await book.deleteOne()
+        res.json({message: 'Deleted successfully'})
+        res.redirect('/')
+    }catch (err) {
+        res.status(500).json({message:err.message})
+    }
 })
 
 

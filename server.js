@@ -17,6 +17,7 @@ db.once('open', () => console.log('Connected to database'))
 const indexRouter = require('./routes/index')
 const bookRouter = require('./routes/books')
 const authorRouter = require('./routes/authors')
+const publisherRouter = require('./routes/publishers')
 
 
 // Setting u middleware
@@ -33,6 +34,7 @@ app.use(express.json())
 app.use('/', indexRouter)
 app.use('/authors', authorRouter)
 app.use('/books', bookRouter)
+app.use('/publishers', publisherRouter)
 
 
 // port
