@@ -4,7 +4,7 @@ const Author = require('../models/author')
 
 // Getting all
 router.get('/', async(req, res) => {
-    let searchDetail
+    let searchDetail = {}
     if(req.query.name != null && req.query.name != '') {
         searchDetail.name = new RegExp(req.query.name, 'i')
     }
