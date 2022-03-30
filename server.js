@@ -18,6 +18,10 @@ const indexRouter = require('./routes/index')
 const bookRouter = require('./routes/books')
 const authorRouter = require('./routes/authors')
 const publisherRouter = require('./routes/publishers')
+const countryRouter = require('./routes/countries')
+const bookCoverRouter = require('./routes/bookCover')
+const bookGenreRouter = require('./routes/bookGenre')
+const languageRouter = require('./routes/language')
 
 
 // Setting u middleware
@@ -25,7 +29,7 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
 app.use(expressLayouts)
-app.use(express.static('public'))
+app.use(express.static(__dirname + '/public'))
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
@@ -34,7 +38,11 @@ app.use(express.json())
 app.use('/', indexRouter)
 app.use('/authors', authorRouter)
 app.use('/books', bookRouter)
+app.use('/books/genres', bookGenreRouter)
 app.use('/publishers', publisherRouter)
+app.use('/countries', countryRouter)
+app.use('/covers', bookCoverRouter)
+app.use('/languages', languageRouter)
 
 
 // port

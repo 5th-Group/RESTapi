@@ -1,2 +1,6 @@
 <h2>Add Publisher</h2>
-<form action="/publishers" method="POST"></form>
+<form action="/publishers/new" method="POST">
+    <%- include('input_form_partial.ejs') %> 
+    <a href="/publishers">Cancel</a>
+    <button type="submit">Add</button>
+</form>

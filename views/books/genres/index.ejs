@@ -1,0 +1,13 @@
+<h2>List of all genres</h2>
+<h3>Search Bar</h3>
+<form action="/books/genres" method="GET">
+    <label>Name</label>
+    <input type="text" name="name" value="<%= searchDetail.name%>">
+    <button type="submit">Search</button>
+</form>
+<a href="/books/genres/new"><input type="button" value="Add genre"></a>
+<br>
+<br>
+<% bookGenres.forEach(genre => { %>
+    <div href><a href="./books/genres/<%=genre._id%>"><%= genre.name %></a</div>
+<% })%> 

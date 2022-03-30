@@ -1,8 +1,8 @@
 // Dependencies
 const express = require('express')
-const { redirect } = require('express/lib/response')
 const router = express.Router()
 const Publisher = require('../models/publisher')
+const Country = require('../models/countries')
 
 
 // GET all
@@ -27,7 +27,17 @@ router.get('/', async(req, res) => {
 
 // GET new page
 router.get('/new', async(req, res) => {
-    res.render('publishers/new', {publisher: new Publisher()})
+    try {
+        const publisher = await new Publisher()
+        const countries = await Country.find({})
+        res.render('publishers/new', {
+            publisher: publisher,
+            countries: countries,
+        })
+    } catch (err) {
+        res.send(err.message)
+    }
+
 })
 
 
@@ -38,16 +48,22 @@ router.get('/:id', getPublisher, async(req, res) => {
 
 
 // POST
-router.post('/', async(req, res) => {
+router.post('/new', async(req, res) => {
+    const contact = {
+        address: req.body.address,
+        phoneNumber: req.body.phoneNumber,
+        twitter: req.body.twitter,
+        facebook: req.body.facebook,
+        email: req.body.email,
+    }
     const publisher = new Publisher({
         name: req.body.name,
-        contact: req.body.contact,
-        address: req.body.address,
-        origin: req.body.origin,
+        contact: contact,
+        origin: req.body.country,
     })
     try {
         await publisher.save()
-        res.redirect('publishers/index')
+        res.redirect('/publishers')
     } catch {
         res.render('publishers/new', {
             errorMessage: 'Something is wrong',

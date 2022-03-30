@@ -35,7 +35,9 @@ router.get('/:id', getAuthor, async(req, res) => {
 // Creating one
 router.post('/', async(req, res) => {
     const author = new Author({
-        name: req.body.name,
+        firstName: req.body.fname,
+        middleName: req.body.midname,
+        lastName: req.body.lname,
         origin: req.body.origin,
         dateOfBirth: req.body.dateOfBirth,
         biography: req.body.biography
@@ -46,7 +48,7 @@ router.post('/', async(req, res) => {
     }catch(err) {
         res.render('authors/new', {
             author: author,
-            errorMessage: err.Message
+            errorMessage: err.message
         })
     }
 })

@@ -1,18 +1,24 @@
-<ul>
-    <li>
-        <label>Name</label>
-        <input type="text" name="name" value="<%= author.name %>">
-    </li>
-    <li>
-        <label>Origin</label>
-        <input type="text" name="origin" value="<%= author.origin %>">
-    </li>
-    <li>
-        <label>Date of Birth</label>
-        <input type="date" name="dateOfBirth" value="<%= author.dateOfBirth %>">
-    </li>
-    <li>
-        <label>Biography</label>
-        <input type="text" name="biography" value="<%= author.biography %>">
-    </li>
-</ul>
+<div>
+    <label>First Name</label>
+    <input type="text" name="fname" value="<%= author.firstName %>">
+</div>
+<div>
+    <label>Middle Name</label>
+    <input type="text" name="midname" value="<%= author.middleName %>">
+</div>
+<div>
+    <label>Last Name</label>
+    <input type="text" name="lname" value="<%= author.lname %>">
+</div>
+<div>
+    <label>Origin</label>
+    <input type="text" name="origin" value="<%= author.origin %>">
+</div>
+<div>
+    <label>Date of Birth</label>
+    <input type="date" name="dateOfBirth" value="<%= author.dateOfBirth %>">
+</div>
+<div>
+    <label for="bio">Biography</label>
+    <textarea name="biography" id="bio" cols="50" rows="5"></textarea>
+</div>

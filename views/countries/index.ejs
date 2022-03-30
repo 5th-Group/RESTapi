@@ -1,12 +1,13 @@
-<h2>Publisher list</h2>
+<h2>Countries list</h2>
 <h3>Search Bar</h3>
 <form action="/books" method="GET">
     <label>Name</label>
     <input type="text" name="name" value="<%= searchDetail.name%>">
     <button type="submit">Search</button>
 </form>
+<a href="/countries/new"><input type="button" value="Add Country"></a>
 <br>
 <br>
-<% publishers.forEach(publisher => { %>
-    <div href><a href="#">><%= publisher.name %></a</div>
+<% countries.forEach(country => { %>
+    <div href><a href="./countries/<%=country._id%>"><%= country.name %></a</div>
 <% })%> 

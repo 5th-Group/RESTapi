@@ -1,75 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const Book = require('../models/book')
-
-/*// Getting all
-router.get('/', (req, res) => {
-    try {
-        const books = await Book.find({})
-        res.send(books)
-    } catch (err) {
-        res.status(500).json({ message: err.message})
-    }
-    res.render('books/index')
-})
-
-// Getting one
-router.get('/:id', getBook, (req, res) => {
-    res.send(res.book.name)
-})
-
-// Creating one
-router.post('/', async(req, res) => {
-    const book = new Book({
-        id: req.body.id,
-        name: req.body.name,
-    })
-    try {
-        const newBook = await book.save()
-        res.status(201).json(newBook)
-    }catch(err) {
-        res.status(400).json({ message: err.message})
-    }
-})
-
-async function getBook(req, res, next) {
-    let book
-    try {
-        book = await Book.findById(req.params.id)
-        if(book == null) {
-            res.status(404).json({message: "Can't find that book"})
-        }
-    }catch (err){
-        res.status(500).json({message:err.message})
-    }
-    res.book = book
-    next()
-}
-
-// Updating one
-router.patch('/:id', getBook, async (req, res) => {
-    if(req.body.name != null) {
-        res.book.name = req.body.name
-    }
-    try {
-        const updatedBook = await res.book.save()
-        res.json({message: 'Updated successfully'})
-    }catch (err) {
-        res.status(400).json({message: err.message})
-    }
-})
-
-// Deleting  one
-router.delete('/:id', getBook, async (req, res) => {
-    try {
-        await res.book.remove()
-        res.json({message: 'Deleted successfully'})
-    }catch (err) {
-        res.status(500).json({message:err.message})
-    }
-})
-
-module.exports = router*/
+const BookCover = require('../models/bookCover')
+const Language = require('../models/language')
+const Author = require('../models/author')
+const Publisher = require('../models/publisher')
+const BookGenre = require('../models/bookGenre')
 
 // Get All
 router.get('/', async (req, res) => {
@@ -88,12 +24,30 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/new', (req, res) => {
-    res.render('books/new', { book: new Book() })
+router.get('/new', async (req, res) => {
+    try {
+        const authors = await Author.find({})
+        const languages = await Language.find({})
+        const publishers = await Publisher.find({})
+        const bookCovers = await BookCover.find({})
+        const bookGenres = await BookGenre.find({})
+        const book = await new Book()
+        res.render('books/new', { 
+            book: book, 
+            authors: authors, 
+            languages: languages, 
+            publishers: publishers, 
+            bookCovers: bookCovers,
+            bookGenres: bookGenres,
+        })
+    } catch (err) {
+        console.log({message: err.message})
+    }
+
 })
 
 
-router.get('/:id', getBook, (req, res) => {
+router.get('/detail/:id', getBook, (req, res) => {
     res.send(res.book)
 })
 
@@ -101,17 +55,26 @@ router.get('/:id', getBook, (req, res) => {
 
 
 // Create
-router.post('/', async (req, res) => {
+router.post('/new', async (req, res) => {
     const book = new Book({
-        name: req.body.title,
+        title: req.body.title,
+        pageCount: req.body.pageCount,
+        description: req.body.desc,
+        author: req.body.author,
+        language: req.body.language,
+        genre: req.body.genre,
+        coverType: req.body.coverType,
+        publishDate: req.body.publishDate,
+        publisher: req.body.publisher,
+        isbn: req.body.isbn,
     })
     try {
-        const newBook = await book.save()
-        res.redirect('books')
-    }catch (err) {
+        await book.save()
+        res.redirect('/books')
+    } catch (err) {
         res.render('books/new', {
-        book: book,
-        errorMessage: err.Message
+            book: req.body,
+            errorMessage: err.message,
         })
     }
 })
