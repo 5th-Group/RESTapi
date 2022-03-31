@@ -1,3 +1,4 @@
+// Dependencies
 const express = require('express')
 const router = express.Router()
 const Book = require('../models/book')
@@ -6,6 +7,8 @@ const Language = require('../models/language')
 const Author = require('../models/author')
 const Publisher = require('../models/publisher')
 const BookGenre = require('../models/bookGenre')
+const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
+
 
 // Get All
 router.get('/', async (req, res) => {
@@ -47,8 +50,8 @@ router.get('/new', async (req, res) => {
 })
 
 
-router.get('/detail/:id', getBook, (req, res) => {
-    res.send(res.book)
+router.get('/detail/:id', getBook, async(req, res) => {
+    res.render('books/detail', {book: res.book})
 })
 
 
@@ -64,10 +67,13 @@ router.post('/new', async (req, res) => {
         language: req.body.language,
         genre: req.body.genre,
         coverType: req.body.coverType,
-        publishDate: req.body.publishDate,
+        publishDate: new Date(req.body.publishDate),
         publisher: req.body.publisher,
         isbn: req.body.isbn,
     })
+
+    saveImg(book, req.body.img)
+
     try {
         await book.save()
         res.redirect('/books')
@@ -87,16 +93,15 @@ router.patch('/', (req, res) => {
 
 
 // Delete
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async(req, res) => {
     try {
-        const book = await Book.findById(req.params.id)
-        await book.deleteOne()
-        res.json({message: 'Deleted successfully'})
-        res.redirect('/')
-    }catch (err) {
-        res.status(500).json({message:err.message})
+        await Book.deleteOne({id: req.params.id})
+        res.redirect('/books')
+    } catch (err) {
+        res.send({error: err.message})
     }
 })
+
 
 
 // Function to find book
@@ -112,6 +117,16 @@ async function getBook(req, res, next) {
     }
     res.book = book
     next()
+}
+
+
+function saveImg(book, imgEncoded) {
+    if(imgEncoded == null) return
+    const img = JSON.parse(imgEncoded)
+    if(img != null && imageMimeTypes.includes(img.type)) {
+        book.image = new Buffer.from(img.data, 'base64')
+        book.imageType = img.type
+    }
 }
 
 module.exports = router

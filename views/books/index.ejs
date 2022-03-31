@@ -11,5 +11,9 @@
 <br>
 <br>
 <% books.forEach(book => { %>
-    <div href><a href="./books/detail/<%=book._id%>"><%= book.title %></a</div>
+    <div><a href="./books/detail/<%=book._id%>"><img src="<%= book.iconImgPath %>" width="100" height="150"></a></div>
+    <a href="/books/<%= book._id %>/edit"><input type="button" value="Edit"></a>
+    <form method="POST" action="/books/<%= book._id %>?_method=DELETE">
+        <button type="submit">Delete</button>
+    </form>
 <% })%> 

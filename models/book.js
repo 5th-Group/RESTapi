@@ -39,14 +39,14 @@ const bookSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    // image: {
-    //     type: Buffer,
-    //     required: true,
-    // },
-    // imageType: {
-    //     type: String,
-    //     required: true,
-    // },
+    image: {
+        type: Buffer,
+        required: true,
+    },
+    imageType: {
+        type: String,
+        required: true,
+    },
     publishDate: {
         type: Date,
         required: true,
@@ -64,6 +64,13 @@ const bookSchema = new mongoose.Schema({
             type: String,
         },
     },
+})
+
+
+bookSchema.virtual('iconImgPath').get(function() {
+    if (this.image != null && this.imageType != null ) {
+        return `data:${this.imageType};charset=utf-8;base64,${this.image.toString('base64')}`
+    }
 })
 
 module.exports = mongoose.model('books', bookSchema)

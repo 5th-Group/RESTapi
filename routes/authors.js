@@ -32,14 +32,21 @@ router.get('/:id', getAuthor, async(req, res) => {
     res.render('authors/detail', {author: res.author})
 })
 
+
+// Updating one
+router.get('/:id/edit', getAuthor, async(req, res) => {
+    res.render('authors/edit', {author: res.author})
+})
+
+
 // Creating one
-router.post('/', async(req, res) => {
+router.post('/new', async(req, res) => {
     const author = new Author({
         firstName: req.body.fname,
         middleName: req.body.midname,
         lastName: req.body.lname,
         origin: req.body.origin,
-        dateOfBirth: req.body.dateOfBirth,
+        dateOfBirth: new Date(req.body.dateOfBirth),
         biography: req.body.biography
     })
     try {
@@ -58,7 +65,7 @@ async function getAuthor(req, res, next) {
     try {
         author = await Author.findById(req.params.id)
         if(author == null) {
-            res.status(404).json({message: "Can't find that author"})
+            res.status(404).send({message: "Can't find that author"})
         }
     }catch (err){
         res.status(500).json({message:err.message})
@@ -67,9 +74,15 @@ async function getAuthor(req, res, next) {
     next()
 }
 
-// Updating one
 
 // Deleting  one
-
+router.delete('/:id', async(req, res) => {
+    try {
+        await Author.deleteOne({id: req.params.id})
+        res.redirect('/authors')
+    } catch (err) {
+        res.send({error: err.message})
+    }
+})
 
 module.exports = router

@@ -12,4 +12,8 @@
 <br>
 <% authors.forEach(author => { %>
     <div><a href="./authors/<%= author._id %> "><%= author.lastName + ' ' + author.middleName + ' ' + author.firstName %> </a></div>
+    <a href="/authors/<%= author._id %>/edit"><input type="button" value="Edit"></a>
+    <form method="POST" action="/authors/<%= author._id %>?_method=DELETE">
+        <button type="submit">Delete</button>
+    </form>
 <% })%> 
