@@ -32,7 +32,7 @@ app.set('layout', 'layouts/layout')
 app.use(expressLayouts)
 app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public'))
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({extended: false, limit: '10mb'}))
 app.use(express.json())
 
 

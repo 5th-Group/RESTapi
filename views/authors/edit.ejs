@@ -1,5 +1,5 @@
 <h2>Edit <%= author.lastName + ' ' + author.middleName + ' ' + author.firstName %>'s info</h2>
-<form action="/authors/edit" method="POST">
+<form action="/authors/<%= author._id %>/edit?_method=PUT" method="POST">
     <%- include('input_form_partial.ejs') %>
     <a href="/authors"><input type="button" value="Cancle"></a>
     <button type="submit">Edit</button>

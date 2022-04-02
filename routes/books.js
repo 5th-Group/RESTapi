@@ -4,7 +4,7 @@ const router = express.Router()
 const Book = require('../models/book')
 const BookCover = require('../models/bookCover')
 const Language = require('../models/language')
-const Author = require('../models/author')
+const Author = require('../models/authors')
 const Publisher = require('../models/publisher')
 const BookGenre = require('../models/bookGenre')
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg']
@@ -51,10 +51,35 @@ router.get('/new', async (req, res) => {
 
 
 router.get('/detail/:id', getBook, async(req, res) => {
-    res.render('books/detail', {book: res.book})
+    try {
+        const book = await res.book.populate('author genre language publisher')
+        res.render('books/detail', {book: book})
+    } catch (err) {
+        res.send({message: err.message})
+    }
 })
 
 
+// GET EDIT PAGE
+router.get('/detail/:id/edit', getBook, async(req, res) => {
+    try {
+        const authors = await Author.find({})
+        const languages = await Language.find({})
+        const publishers = await Publisher.find({})
+        const bookCovers = await BookCover.find({})
+        const bookGenres = await BookGenre.find({})
+        const book = await res.book.populate('author genre language publisher')
+        res.render('books/edit', {
+            book: book,
+            authors: authors, 
+            languages: languages, 
+            publishers: publishers, 
+            bookCovers: bookCovers,
+            bookGenres: bookGenres,})
+    } catch (err) {
+        res.redirect('/books')
+    }
+})
 
 
 // Create
@@ -87,8 +112,15 @@ router.post('/new', async (req, res) => {
 
 
 // Update
-router.patch('/', (req, res) => {
-
+router.put('/books/detail/:id', getBook, async(req, res) => {
+    let book
+    try {
+        book = res.book
+        await book.save()
+        res.redirect('/books')
+    } catch (err) {
+        res.redirect('/books/edit')
+    }
 })
 
 

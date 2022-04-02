@@ -2,12 +2,18 @@
 <img src="<%= book.iconImgPath %>" width="100" height="150">
 <ul>
     <li>Page count: <%= book.pageCount %></li>
-    <% const authors = book.author %> 
-    <% authors.map(author => { %>
-        <li>Author: <%= author.firstName %></li>
-    <% }) %> 
-    <li>Genre: </li>
-    <li>Language: </li>
-    <li>Publish Date: </li>
-    <li>Publisher: </li>
+    <li>Author: </li>
+        <ul>
+            <% book.author.map(author => { %>
+                <% const middleName = author.middleName == null ? " " : " " + author.middleName + " " %> 
+                    <li><%= author.lastName + middleName + author.firstName %></li>
+            <% }) %> 
+        </ul>
+    <% genreList = book.genre.map( genre => { %>
+        <% return genre.name %> 
+    <% }) %>
+    <li>Genre: <%= genreList.join(' ')%></li>
+    <li>Language: <%= book.language.name %> </li>
+    <li>Publish Date: <%= book.publishDate %></li>
+    <li>Publisher: <%= book.publisher.name %> </li>
 </ul>

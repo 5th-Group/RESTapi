@@ -2,6 +2,18 @@ GET http://localhost:3000/publishers
 
 ###
 
+GET http://localhost:3000/authors/6247df42ec6aa26370d0d94c
+
+
+
+###
+
+GET http://localhost:3000/books/detail/6247e476debd45aac3c20ba6
+
+
+###
+
+
 POST http://localhost:3000/books/new
 Content-Type: application/json
 

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Author = require('../models/author')
+const Author = require('../models/authors')
 
 // Getting all
 router.get('/', async(req, res) => {
@@ -59,6 +59,33 @@ router.post('/new', async(req, res) => {
         })
     }
 })
+
+
+// UPDATING ONE
+router.put('/:id/edit', getAuthor, async(req, res) => {
+    let author
+    try{
+        author = res.author
+        author.firstName = req.body.fname,
+        author.middleName = req.body.midname,
+        author.lastName = req.body.lname,
+        author.origin = req.body.origin,
+        author.dateOfBirth = new Date(req.body.dateOfBirth),
+        author.biography =  req.body.biography
+        await author.save()
+        res.redirect('/authors')
+    } catch {
+        if(author == null) {
+            res.redirect('/')
+        } else {
+            res.render('authors/edit', {
+                author: author,
+                errorMessage: 'Error'
+            })
+        }
+    }
+})
+
 
 async function getAuthor(req, res, next) {
     let author

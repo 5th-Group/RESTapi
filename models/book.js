@@ -54,7 +54,7 @@ const bookSchema = new mongoose.Schema({
     publisher: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'publisher',
+        ref: 'publishers',
     },
     isbn: {
         isbn10: {
