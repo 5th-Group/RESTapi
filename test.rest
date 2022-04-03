@@ -25,3 +25,9 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:3000/books/6238543d32a4eaf869f4879d
+
+
+###
+
+
+GET http://localhost:3000/db

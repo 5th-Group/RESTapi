@@ -23,6 +23,7 @@ const countryRouter = require('./routes/countries')
 const bookCoverRouter = require('./routes/bookCover')
 const bookGenreRouter = require('./routes/bookGenre')
 const languageRouter = require('./routes/language')
+const bookQueryRouter = require('./routes/bookQuery')
 
 
 // Setting u middleware
@@ -45,6 +46,7 @@ app.use('/publishers', publisherRouter)
 app.use('/countries', countryRouter)
 app.use('/covers', bookCoverRouter)
 app.use('/languages', languageRouter)
+app.use('/db', bookQueryRouter)
 
 
 // port
