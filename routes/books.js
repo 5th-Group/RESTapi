@@ -112,20 +112,21 @@ router.post('/new', async (req, res) => {
 
 
 // Update
-router.put('/books/detail/:id', getBook, async(req, res) => {
+router.put('/detail/:id/edit', getBook, async(req, res) => {
     let book
     try {
         book = res.book
+        book = req.body
         await book.save()
         res.redirect('/books')
     } catch (err) {
-        res.redirect('/books/edit')
+        res.render(`/books/detail/${book._id}/edit`, {book: book, errorMessage: err.message })
     }
 })
 
 
 // Delete
-router.delete('/:id', async(req, res) => {
+router.delete('/detail/:id', async(req, res) => {
     try {
         await Book.deleteOne({id: req.params.id})
         res.redirect('/books')

@@ -46,6 +46,7 @@ router.post('/new', async(req, res) => {
         middleName: req.body.midname,
         lastName: req.body.lname,
         origin: req.body.origin,
+        gender: req.body.gender,
         dateOfBirth: new Date(req.body.dateOfBirth),
         biography: req.body.biography
     })

@@ -1,5 +1,6 @@
 // Dependencies
 const mongoose = require('mongoose')
+const Book = require('./book')
 
 const authorSchema = new mongoose.Schema({
     firstName: {
@@ -17,6 +18,10 @@ const authorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    gender: {
+        type: String,
+        required: true,
+    },
     dateOfBirth: {
         type: Date,
         required: true,
@@ -24,6 +29,19 @@ const authorSchema = new mongoose.Schema({
     biography: {
         type: String,
     }
+})
+
+
+authorSchema.pre('deleteOne', function(next) {
+    Book.findOne({author: {$elemMatch: this.id}}, (err, books) => {
+        if (err) {
+            next(err)
+        } else if (books.length > 0) {
+            next(new Error(`This author still has books with which ${this.gender == "male" ? "he" : "she"} is associted`))
+        } else {
+            next()
+        }
+    })
 })
 
 module.exports = mongoose.model('authors', authorSchema)
