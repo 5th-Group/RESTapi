@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     }
     try {
         const books = await Book.find(searchDetail)
-        res.send(books)
+        res.json(books)
     } catch (err) {
         res.send(err)
     }
