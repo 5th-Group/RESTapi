@@ -32,8 +32,8 @@ const authorSchema = new mongoose.Schema({
 })
 
 
-authorSchema.pre('deleteOne', function(next) {
-    Book.findOne({author: {$elemMatch: this.id}}, (err, books) => {
+authorSchema.pre('deleteOne', {document: true}, function(next) {
+    Book.find({author: this.id}, (err, books) => {
         if (err) {
             next(err)
         } else if (books.length > 0) {

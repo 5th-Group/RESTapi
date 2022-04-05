@@ -105,11 +105,13 @@ async function getAuthor(req, res, next) {
 
 // Deleting  one
 router.delete('/:id', async(req, res) => {
+    let author
     try {
-        await Author.deleteOne({id: req.params.id})
+        author = await Author.findById(req.params.id)
+        await author.deleteOne()
         res.redirect('/authors')
     } catch (err) {
-        res.send({error: err.message})
+        res.send(err.message)
     }
 })
 

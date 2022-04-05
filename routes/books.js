@@ -112,29 +112,41 @@ router.post('/new', async (req, res) => {
 
 
 // Update
-router.put('/detail/:id/edit', getBook, async(req, res) => {
+router.put('/detail/:id/edit', async(req, res) => {
     let book
     try {
-        book = res.book
-        book = req.body
+        book = await Book.findById(req.params.id)
+
+        book.title = req.body.title
+        book.pageCount = req.body.pageCount
+        book.description = req.body.desc
+        book.author = req.body.author
+        book.language = req.body.language
+        book.genre = req.body.genre
+        book.coverType = req.body.coverType
+        book.publishDate = new Date(req.body.publishDate)
+        book.publisher = req.body.publisher
+        book.isbn = req.body.isbn
+        
         await book.save()
         res.redirect('/books')
     } catch (err) {
-        res.render(`/books/detail/${book._id}/edit`, {book: book, errorMessage: err.message })
+        res.render('books/edit', {book: req.body, errorMessage: err.message})
     }
 })
 
 
 // Delete
 router.delete('/detail/:id', async(req, res) => {
+    let author
     try {
-        await Book.deleteOne({id: req.params.id})
+        author = await Book.findById(req.params.id)
+        await author.deleteOne()
         res.redirect('/books')
     } catch (err) {
         res.send({error: err.message})
     }
 })
-
 
 
 // Function to find book

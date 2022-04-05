@@ -1,5 +1,6 @@
 // Dependencies
 const express = require('express')
+const book = require('../models/book')
 const router = express.Router()
 const Book = require('../models/book')
 
