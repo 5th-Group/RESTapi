@@ -2,17 +2,16 @@ FilePond.registerPlugin(
     FilePondPluginFileEncode,
     FilePondPluginImagePreview,
     FilePondPluginImageResize,
-)
-
+    FilePondPluginImageTransform
+);
 
 FilePond.setOptions({
-  stylePanelAspectRatio: 150 / 100,
-  imageResizeTargetWidth: 100,
-  imageResizeTargetHeight: 150,
-})
+    stylePanelAspectRatio: 150 / 100,
+    imageResizeTargetWidth: 100,
+    imageResizeTargetHeight: 150,
+});
 
-FilePond.parse(document.body)
-
+FilePond.parse(document.body);
 
 // const inputElements = document.querySelectorAll('input.filepond');
 
