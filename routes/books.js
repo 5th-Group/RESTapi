@@ -61,11 +61,9 @@ router.get("/db", async (req, res) => {
             )
             .lean();
         let booksImg = await Book.find().select("image imageType");
-        booksImg.forEach((img) => {
-            books.forEach((book) => {
-                book.icon = img.iconImgPath;
-            });
-        });
+        for (i = 0; i < booksImg.length; i++) {
+            books[i].icon = booksImg[i].iconImgPath;
+        }
         res.json(books);
     } catch (err) {
         res.send(err);
