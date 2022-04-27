@@ -1,46 +1,42 @@
-const express = require('express')
-const router = express.Router()
-const Author = require('../models/authors')
+const express = require("express");
+const router = express.Router();
+const Author = require("../models/authors");
 
 // Getting all
-router.get('/', async(req, res) => {
-    let searchDetail = {}
-    if(req.query.name != null && req.query.name != '') {
-        searchDetail.name = new RegExp(req.query.name, 'i')
+router.get("/", async (req, res) => {
+    let searchDetail = {};
+    if (req.query.name != null && req.query.name != "") {
+        searchDetail.name = new RegExp(req.query.name, "i");
     }
     try {
-        const authors = await Author.find(searchDetail)
-        res.render('authors/index', 
-        {
-        authors: authors,
-        searchDetail: req.query
-        })
+        const authors = await Author.find(searchDetail);
+        res.render("authors/index", {
+            authors: authors,
+            searchDetail: req.query,
+            isAuthenticated: req.isAuthenticated(),
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message})
+        res.status(500).json({ message: err.message });
     }
-})
-
+});
 
 // GET creating page
-router.get('/new', (req, res) => {
-    res.render('authors/new', {author: new Author()})
-})
-
+router.get("/new", (req, res) => {
+    res.render("authors/new", { author: new Author() });
+});
 
 // GET one
-router.get('/:id', getAuthor, async(req, res) => {
-    res.render('authors/detail', {author: res.author})
-})
-
+router.get("/:id", getAuthor, async (req, res) => {
+    res.render("authors/detail", { author: res.author });
+});
 
 // Updating one
-router.get('/:id/edit', getAuthor, async(req, res) => {
-    res.render('authors/edit', {author: res.author})
-})
-
+router.get("/:id/edit", getAuthor, async (req, res) => {
+    res.render("authors/edit", { author: res.author });
+});
 
 // Creating one
-router.post('/new', async(req, res) => {
+router.post("/new", async (req, res) => {
     const author = new Author({
         firstName: req.body.fname,
         middleName: req.body.midname,
@@ -48,71 +44,68 @@ router.post('/new', async(req, res) => {
         origin: req.body.origin,
         gender: req.body.gender,
         dateOfBirth: new Date(req.body.dateOfBirth),
-        biography: req.body.biography
-    })
+        biography: req.body.biography,
+    });
     try {
-        const newAuthor = await author.save()
-        res.redirect('/authors')
-    }catch(err) {
-        res.render('authors/new', {
+        const newAuthor = await author.save();
+        res.redirect("/authors");
+    } catch (err) {
+        res.render("authors/new", {
             author: author,
-            errorMessage: err.message
-        })
+            errorMessage: err.message,
+        });
     }
-})
-
+});
 
 // UPDATING ONE
-router.put('/:id/edit', getAuthor, async(req, res) => {
-    let author
-    try{
-        author = res.author
-        author.firstName = req.body.fname,
-        author.middleName = req.body.midname,
-        author.lastName = req.body.lname,
-        author.origin = req.body.origin,
-        author.dateOfBirth = new Date(req.body.dateOfBirth),
-        author.biography =  req.body.biography
-        await author.save()
-        res.redirect('/authors')
+router.put("/:id/edit", getAuthor, async (req, res) => {
+    let author;
+    try {
+        author = res.author;
+        (author.firstName = req.body.fname),
+            (author.middleName = req.body.midname),
+            (author.lastName = req.body.lname),
+            (author.origin = req.body.origin),
+            (author.dateOfBirth = new Date(req.body.dateOfBirth)),
+            (author.biography = req.body.biography);
+        await author.save();
+        res.redirect("/authors");
     } catch {
-        if(author == null) {
-            res.redirect('/')
+        if (author == null) {
+            res.redirect("/");
         } else {
-            res.render('authors/edit', {
+            res.render("authors/edit", {
                 author: author,
-                errorMessage: 'Error'
-            })
+                errorMessage: "Error",
+            });
         }
     }
-})
-
+});
 
 async function getAuthor(req, res, next) {
-    let author
+    let author;
     try {
-        author = await Author.findById(req.params.id)
-        if(author == null) {
-            res.status(404).send({message: "Can't find that author"})
+        author = await Author.findById(req.params.id);
+        if (author == null) {
+            res.status(404).send({ message: "Can't find that author" });
         }
-    }catch (err){
-        res.status(500).json({message:err.message})
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-    res.author = author
-    next()
+    res.author = author;
+    next();
 }
 
-
 // Deleting  one
-router.delete('/:id', async(req, res) => {
-    let author
+router.delete("/:id", async (req, res) => {
+    let author;
     try {
-        author = await Author.findById(req.params.id)
-        await author.deleteOne()
-        res.redirect('/authors')
+        author = await Author.findById(req.params.id);
+        await author.deleteOne();
+        res.redirect("/authors");
     } catch (err) {
-        res.send(err.message)
+        res.send(err.message);
     }
-})
+});
 
-module.exports = router
+module.exports = router;
