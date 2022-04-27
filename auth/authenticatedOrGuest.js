@@ -1,6 +1,6 @@
 const passport = require("passport");
 
-module.exports = function authenticatedOrGuest(req, res, next) {
+module.exports = function (req, res, next) {
     return passport.authenticate(
         "jwt",
         { session: false },

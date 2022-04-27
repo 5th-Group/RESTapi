@@ -6,6 +6,7 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const authenticatedOrGuest = require("./auth/authenticatedOrGuest");
 require("dotenv").config();
 require("./auth/auth");
 
@@ -37,14 +38,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routing
-app.use("/", indexRouter);
-app.use("/authors", authorRouter);
-app.use("/books", bookRouter);
-app.use("/books/genres", bookGenreRouter);
-app.use("/publishers", publisherRouter);
-app.use("/countries", countryRouter);
-app.use("/covers", bookCoverRouter);
-app.use("/languages", languageRouter);
+app.use("/", authenticatedOrGuest, indexRouter);
+app.use("/authors", authenticatedOrGuest, authorRouter);
+app.use("/books", authenticatedOrGuest, bookRouter);
+app.use("/books/genres", authenticatedOrGuest, bookGenreRouter);
+app.use("/publishers", authenticatedOrGuest, publisherRouter);
+app.use("/countries", authenticatedOrGuest, countryRouter);
+app.use("/covers", authenticatedOrGuest, bookCoverRouter);
+app.use("/languages", authenticatedOrGuest, languageRouter);
 
 // port
 const port = process.env.PORT || 3000;

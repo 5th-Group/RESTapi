@@ -5,10 +5,16 @@
             <li><a href="/books">Library</a></li>
             <li><a href="/authors">Author</a></li>
             <li><a href="/languages">Language</a></li>
+            <li><a href="/publishers">Publisher</a></li>
+            <li><a href="/countries">Country</a></li>
         </ul>
         <ul>
+            <% if(!isAuthenticated) {%>
             <li><a href="/register">Register</a></li>
             <li><a href="/login">Log in</a></li>
+            <% } else {%>
+            <li><a href="/logout">Log out</a></li>
+            <% } %>
         </ul>
     </nav>
 </header>

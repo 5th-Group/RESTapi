@@ -11,7 +11,7 @@ const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
 const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
 
 // Get All
-router.get("/", async (req, res) => {
+router.get("/", authenticatedOrGuest, async (req, res) => {
     let searchDetail = {};
     if (req.query.title != null && req.query.title != "") {
         searchDetail.title = new RegExp(req.query.title, "i");
@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
         res.render("books/index", {
             books: books,
             searchDetail: req.query,
+            isAuthenticated: req.isAuthenticated(),
         });
     } catch (err) {
         res.send(err);
@@ -42,6 +43,7 @@ router.get("/new", async (req, res) => {
             publishers: publishers,
             bookCovers: bookCovers,
             bookGenres: bookGenres,
+            isAuthenticated: req.isAuthenticated(),
         });
     } catch (err) {
         console.log({ message: err.message });
@@ -67,9 +69,9 @@ router.get("/imgdb", async (req, res) => {
         let icon = [];
         let books = await Book.find().select("image imageType");
         books.forEach((book) => {
-            book.icon = book.iconImgPath;
+            icon.push(book.iconImgPath);
         });
-        res.json(books);
+        res.json(icon);
     } catch (err) {
         res.send(err);
     }
@@ -78,7 +80,10 @@ router.get("/imgdb", async (req, res) => {
 router.get("/detail/:id", getBook, async (req, res) => {
     try {
         const book = await res.book.populate("author genre language publisher");
-        res.render("books/detail", { book: book });
+        res.render("books/detail", {
+            book: book,
+            isAuthenticated: req.isAuthenticated(),
+        });
     } catch (err) {
         res.send({ message: err.message });
     }
@@ -100,6 +105,7 @@ router.get("/detail/:id/edit", getBook, async (req, res) => {
             publishers: publishers,
             bookCovers: bookCovers,
             bookGenres: bookGenres,
+            isAuthenticated: req.isAuthenticated(),
         });
     } catch (err) {
         res.redirect("/books");

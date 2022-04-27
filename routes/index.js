@@ -5,9 +5,8 @@ const brcypt = require("bcrypt");
 const passport = require("passport");
 const User = require("../models/users");
 const Country = require("../models/countries");
+const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
 const jwt = require("jsonwebtoken");
-
-const initializePassport = require("../auth/auth");
 
 /* GET home page. */
 router.get("/", (req, res) => {
@@ -15,8 +14,14 @@ router.get("/", (req, res) => {
 });
 
 // GET login page
-router.get("/login", function (req, res) {
-    res.render("authentication/login");
+router.get("/login", authenticatedOrGuest, function (req, res) {
+    if (!req.user) {
+        res.render("authentication/login", {
+            isAuthenticated: req.isAuthenticated(),
+        });
+    } else {
+        res.redirect("/");
+    }
 });
 
 // GET register page
@@ -26,7 +31,14 @@ router.get("/register", async (req, res) => {
     res.render("authentication/register", {
         user: user,
         countries: countries,
+        isAuthenticated: req.isAuthenticated(),
     });
+});
+
+// GET logout page
+router.get("/logout", async (req, res) => {
+    res.clearCookie("access_token");
+    res.redirect("/");
 });
 
 // POST login
@@ -34,14 +46,21 @@ router.post("/login", async (req, res, next) => {
     passport.authenticate("login", async (err, user, info) => {
         try {
             if (err || !user) {
-                const error = new Error(err.message);
-                return res.redirect("/login");
+                const error = new Error(info.message);
+                return res.render("authentication/login", {
+                    errorMessage: error.message,
+                    isAuthenticated: req.isAuthenticated(),
+                });
             }
 
             req.login(user, { session: false }, async (error) => {
                 if (error) return next(error);
 
-                const body = { _id: user._id, username: user.username };
+                const body = {
+                    _id: user._id,
+                    username: user.username,
+                    role: user.role,
+                };
                 const token = jwt.sign({ user: body }, "TOP_SECRET");
                 res.cookie("access_token", token, {
                     maxAge: 60 * 60 * 1000,
@@ -75,8 +94,11 @@ router.post("/register", async (req, res) => {
         await user.save();
         res.redirect("/");
     } catch (err) {
+        const countries = await Country.find({});
+
         res.render("authentication/register", {
             user: req.body,
+            countries: countries,
             errorMessage: err.message,
         });
     }
