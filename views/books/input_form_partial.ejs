@@ -1,88 +1,123 @@
 <div>
     <label>Title</label>
-    <input type="text" name="title" value="<%= book.title %>">
+    <input type="text" name="title" value="<%= book.title %>" />
 </div>
 <div>
     <label for="genre">Genre</label>
     <select name="genre" id="genre">
-        <% bookGenres.forEach( genre => { %> 
-            <% if (genre._id === book.genre) { %> 
-                <option selected label="<%= genre.name %>" value="<%= genre._id %>">
+        <% bookGenres.forEach( genre => { %> <% if (genre._id === book.genre) {
+        %>
+        <option selected label="<%= genre.name %>" value="<%= genre._id %>">
             <% } else { %>
-                <option label="<%= genre.name %>" value="<%= genre._id %>">
-            <% } %> 
-        <% }) %>
+        </option>
+
+        <option label="<%= genre.name %>" value="<%= genre._id %>">
+            <% } %> <% }) %>
+        </option>
     </select>
 </div>
 <div>
     <label for="author">Author</label>
     <select name="author" id="author">
-
-        <% authors.forEach( author => { %> 
-            <% const name = author.lastName + ' ' + author.middleName + ' ' + author.firstName%> 
-            <% if (author._id === book.author) { %> 
-                <option selected label="<%= name  %>" value="<%= author._id %>">
+        <% authors.forEach( author => { %> <% const name = author.lastName + ' '
+        + author.middleName + ' ' + author.firstName%> <% if (author._id ===
+        book.author) { %>
+        <option selected label="<%= name  %>" value="<%= author._id %>">
             <% } else { %>
-                <option label="<%= name %>" value="<%= author._id %>">
-            <% } %> 
-        <% }) %>
+        </option>
+
+        <option label="<%= name %>" value="<%= author._id %>">
+            <% } %> <% }) %>
+        </option>
     </select>
 </div>
 <div>
     <label for="coverType">Cover Type</label>
     <select name="coverType" id="coverType">
-        <% bookCovers.forEach( bookCover => { %> 
-            <% if (bookCover._id === book.coverType) { %> 
-                <option selected label="<%= bookCover.type %>" value="<%= bookCover._id %>">
+        <% bookCovers.forEach( bookCover => { %> <% if (bookCover._id ===
+        book.coverType) { %>
+        <option
+            selected
+            label="<%= bookCover.type %>"
+            value="<%= bookCover._id %>"
+        >
             <% } else { %>
-                <option label="<%= bookCover.type %>" value="<%= bookCover._id %>">
-            <% } %> 
-        <% }) %>
+        </option>
+
+        <option label="<%= bookCover.type %>" value="<%= bookCover._id %>">
+            <% } %> <% }) %>
+        </option>
     </select>
 </div>
 <div>
     <label>Page Count</label>
-    <input type="number" name="pageCount" min="1" value="<%= book.pageCount %>">
+    <input
+        type="number"
+        name="pageCount"
+        min="1"
+        value="<%= book.pageCount %>"
+    />
 </div>
 <div>
     <label for="language">Language</label>
     <select name="language" id="language">
-        <% languages.forEach( language => { %> 
-            <% if (language._id === book.language) { %> 
-                <option selected label="<%= language.name %>" value="<%= language._id %>">
+        <% languages.forEach( language => { %> <% if (language._id ===
+        book.language) { %>
+        <option
+            selected
+            label="<%= language.name %>"
+            value="<%= language._id %>"
+        >
             <% } else { %>
-                <option label="<%= language.name %>" value="<%= language._id %>">
-            <% } %> 
-        <% }) %>
+        </option>
+
+        <option label="<%= language.name %>" value="<%= language._id %>">
+            <% } %> <% }) %>
+        </option>
     </select>
 </div>
 <div>
     <label for="publisher">Publisher</label>
     <select name="publisher" id="publisher">
-        <% publishers.forEach( publisher => { %> 
-            <% if (publisher._id === book.publisher) { %> 
-                <option selected label="<%= publisher.name %>" value="<%= publisher._id %>">
+        <% publishers.forEach( publisher => { %> <% if (publisher._id ===
+        book.publisher) { %>
+        <option
+            selected
+            label="<%= publisher.name %>"
+            value="<%= publisher._id %>"
+        >
             <% } else { %>
-                <option label="<%= publisher.name %>" value="<%= publisher._id %>">
-            <% } %> 
-        <% }) %>
+        </option>
+
+        <option label="<%= publisher.name %>" value="<%= publisher._id %>">
+            <% } %> <% }) %>
+        </option>
     </select>
 </div>
 <div>
     <label>Publication Date</label>
-    <input type="date" name="publishDate" value="<%= book.publishDate == null ? '' : book.publishDate.toISOString().split('T')[0] %>">
+    <input type="date" name="publishDate" value="<%= book.publishDate == null ?
+    '' : book.publishDate.toISOString().split("T")[0]; %>" />
 </div>
 <div>
     <label>ISBN 10</label>
-    <input type="text" name="isbn10" value="<%= book.isbn.isbn10 %>">
+    <input type="text" name="isbn10" value="<%= book.isbn.isbn10 %>" />
 </div>
 <div>
     <label>ISBN 13</label>
-    <input type="text" name="isbn13" value="<%= book.isbn.isbn13 %>">
+    <input type="text" name="isbn13" value="<%= book.isbn.isbn13 %>" />
+</div>
+<div>
+    <label>Cost</label>
+    <input type="text" name="cost" value="<%= product.cost %>" />
+</div>
+<div>
+    <label>Price</label>
+    <input type="text" name="price" value="<%= product.price %>" />
 </div>
 <div>
     <label for="img">Cover Image</label>
-    <input type="file" name="img" class="filepond" id="img">
+    <input type="file" name="img" class="filepond" id="img" />
 </div>
 <div>
     <label for="desc">Description</label>

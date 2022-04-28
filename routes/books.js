@@ -7,6 +7,7 @@ const Language = require("../models/language");
 const Author = require("../models/authors");
 const Publisher = require("../models/publisher");
 const BookGenre = require("../models/bookGenre");
+const Product = require("../models/product");
 const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
 const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
 
@@ -36,6 +37,7 @@ router.get("/new", async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
         const book = await new Book();
+        const product = await new Product();
         res.render("books/new", {
             book: book,
             authors: authors,
@@ -43,6 +45,7 @@ router.get("/new", async (req, res) => {
             publishers: publishers,
             bookCovers: bookCovers,
             bookGenres: bookGenres,
+            product: product,
             isAuthenticated: req.isAuthenticated(),
         });
     } catch (err) {
@@ -96,7 +99,7 @@ router.get("/detail/:id", getBook, async (req, res) => {
 });
 
 // GET EDIT PAGE
-router.get("/detail/:id/edit", getBook, async (req, res) => {
+router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
@@ -104,8 +107,11 @@ router.get("/detail/:id/edit", getBook, async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
         const book = await res.book.populate("author genre language publisher");
+        const product = await res.product;
+
         res.render("books/edit", {
             book: book,
+            product: product,
             authors: authors,
             languages: languages,
             publishers: publishers,
@@ -120,7 +126,7 @@ router.get("/detail/:id/edit", getBook, async (req, res) => {
 
 // Create
 router.post("/new", async (req, res) => {
-    const book = new Book({
+    const book = await new Book({
         title: req.body.title,
         pageCount: req.body.pageCount,
         description: req.body.desc,
@@ -133,24 +139,44 @@ router.post("/new", async (req, res) => {
         isbn: req.body.isbn,
     });
 
+    const product = await new Product({
+        product: book.id,
+        cost: req.body.cost,
+        price: req.body.price,
+    });
+
     saveImg(book, req.body.img);
 
     try {
         await book.save();
+        await product.save();
         res.redirect("/books");
     } catch (err) {
+        const authors = await Author.find({});
+        const languages = await Language.find({});
+        const publishers = await Publisher.find({});
+        const bookCovers = await BookCover.find({});
+        const bookGenres = await BookGenre.find({});
         res.render("books/new", {
             book: req.body,
+            authors: authors,
+            languages: languages,
+            publishers: publishers,
+            bookCovers: bookCovers,
+            bookGenres: bookGenres,
             errorMessage: err.message,
+            isAuthenticated: req.isAuthenticated(),
         });
     }
 });
 
 // Update
-router.put("/detail/:id/edit", async (req, res) => {
+router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
     let book;
+    let product;
     try {
-        book = await Book.findById(req.params.id);
+        book = await res.book;
+        product = await res.product;
 
         book.title = req.body.title;
         book.pageCount = req.body.pageCount;
@@ -163,10 +189,18 @@ router.put("/detail/:id/edit", async (req, res) => {
         book.publisher = req.body.publisher;
         book.isbn = req.body.isbn;
 
+        product.cost = req.body.cost;
+        product.price = req.body.price;
+
         await book.save();
+        await product.save();
         res.redirect("/books");
     } catch (err) {
-        res.render("books/edit", { book: req.body, errorMessage: err.message });
+        res.render("books/edit", {
+            book: req.body,
+            errorMessage: err.message,
+            isAuthenticated: req.isAuthenticated(),
+        });
     }
 });
 
@@ -194,6 +228,19 @@ async function getBook(req, res, next) {
         res.status(500).json({ message: err.message });
     }
     res.book = book;
+    next();
+}
+
+async function getProduct(req, res, next) {
+    let product;
+    try {
+        product = await Product.findOne({
+            product: res.book.id,
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+    res.product = product;
     next();
 }
 

@@ -1,62 +1,64 @@
 // Dependencies
-const express = require('express')
-const router = express.Router()
-const Language = require('../models/language')
-
+const express = require("express");
+const router = express.Router();
+const Language = require("../models/language");
 
 // GET ALL
-router.get('/', async(req, res) => {
-    let searchDetail = {}
-    if (req.query.name != null && req.query.name != '') {
-        searchDetail.name = new RegExp(req.body.name, 'i')
+router.get("/", async (req, res) => {
+    let searchDetail = {};
+    if (req.query.name != null && req.query.name != "") {
+        searchDetail.name = new RegExp(req.body.name, "i");
     }
     try {
-        const languages = await Language.find(searchDetail)
-        res.render('languages/index', {languages: languages, searchDetail: req.body})
+        const languages = await Language.find(searchDetail);
+        res.render("languages/index", {
+            languages: languages,
+            searchDetail: req.body,
+            isAuthenticated: req.isAuthenticated(),
+        });
     } catch (err) {
-        console.log(err.message)
+        console.log(err.message);
     }
-})
-
+});
 
 // GET NEW
-router.get('/new', async(req, res) => {
+router.get("/new", async (req, res) => {
     try {
-        const language = await new Language()
-        res.render('languages/new', {language: language})
+        const language = await new Language();
+        res.render("languages/new", {
+            language: language,
+            isAuthenticated: req.isAuthenticated(),
+        });
     } catch (err) {
-        console.log(err.message)
+        console.log(err.message);
     }
-})
-
+});
 
 // GET ONE
-router.get('/:id', async(req, res) => {
+router.get("/:id", async (req, res) => {
     try {
-        let language = await Language.findById(req.params.id)
-        res.send(language)
+        let language = await Language.findById(req.params.id);
+        res.send(language);
     } catch (err) {
-        res.send(err.message)
+        res.send(err.message);
     }
-})
-
+});
 
 // POST
-router.post('/new', async(req, res) => {
+router.post("/new", async (req, res) => {
     const language = await new Language({
         name: req.body.name,
         code: req.body.code,
-    })
+    });
     try {
-        await language.save()
-        res.redirect('/languages')
+        await language.save();
+        res.redirect("/languages");
     } catch (err) {
-        res.render('languages/new', {
+        res.render("languages/new", {
             language: req.body,
             errorMessage: err.message,
-        })
+        });
     }
-})
+});
 
-
-module.exports = router
+module.exports = router;

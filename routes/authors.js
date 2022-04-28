@@ -22,17 +22,26 @@ router.get("/", async (req, res) => {
 
 // GET creating page
 router.get("/new", (req, res) => {
-    res.render("authors/new", { author: new Author() });
+    res.render("authors/new", {
+        author: new Author(),
+        isAuthenticated: req.isAuthenticated(),
+    });
 });
 
 // GET one
 router.get("/:id", getAuthor, async (req, res) => {
-    res.render("authors/detail", { author: res.author });
+    res.render("authors/detail", {
+        author: res.author,
+        isAuthenticated: req.isAuthenticated(),
+    });
 });
 
 // Updating one
 router.get("/:id/edit", getAuthor, async (req, res) => {
-    res.render("authors/edit", { author: res.author });
+    res.render("authors/edit", {
+        author: res.author,
+        isAuthenticated: req.isAuthenticated(),
+    });
 });
 
 // Creating one
@@ -53,6 +62,7 @@ router.post("/new", async (req, res) => {
         res.render("authors/new", {
             author: author,
             errorMessage: err.message,
+            isAuthenticated: req.isAuthenticated(),
         });
     }
 });
@@ -77,6 +87,7 @@ router.put("/:id/edit", getAuthor, async (req, res) => {
             res.render("authors/edit", {
                 author: author,
                 errorMessage: "Error",
+                isAuthenticated: req.isAuthenticated(),
             });
         }
     }

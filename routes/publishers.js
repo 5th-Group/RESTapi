@@ -30,6 +30,7 @@ router.get("/new", async (req, res) => {
         res.render("publishers/new", {
             publisher: publisher,
             countries: countries,
+            isAuthenticated: req.isAuthenticated(),
         });
     } catch (err) {
         res.send(err.message);
@@ -62,6 +63,7 @@ router.post("/new", async (req, res) => {
         res.render("publishers/new", {
             errorMessage: "Something is wrong",
             publisher: publisher,
+            isAuthenticated: req.isAuthenticated(),
         });
     }
 });

@@ -10,10 +10,12 @@ const productSchema = new mongoose.Schema({
     cost: {
         type: mongoose.Types.Decimal128,
         required: true,
+        default: "0",
     },
     price: {
         type: mongoose.Types.Decimal128,
         required: true,
+        default: "0",
     },
     review: [
         {

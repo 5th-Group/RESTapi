@@ -1,0 +1,5 @@
+<form action="/books/detail/<%= book._id %>" method="POST">
+    <%- include('input_form_partial.ejs') %>
+    <a href="/books"><input type="button" value="Cancle" /></a>
+    <button type="submit">Edit</button>
+</form>
