@@ -4,7 +4,7 @@ const router = express.Router();
 const Book = require("../models/book");
 const Product = require("../models/product");
 const passport = require("passport");
-require("./auth/auth");
+require("../auth/auth");
 
 router.get("/", async (req, res) => {
     try {
