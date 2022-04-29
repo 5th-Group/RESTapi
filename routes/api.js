@@ -6,7 +6,13 @@ const Product = require("../models/product");
 
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find().populate("detail").lean();
+        const products = await Product.find()
+            .lean()
+            .populate({
+                path: "detail",
+                populate: { path: "author genre language publisher" },
+                select: "title pageCount description author language genre coverType createdAt publishDate publisher isbn",
+            });
         const booksImg = await Book.find().select("image imageType");
         for (i = 0; i < booksImg.length; i++) {
             products[i].detail.icon = booksImg[i].iconImgPath;
