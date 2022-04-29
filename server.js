@@ -25,6 +25,7 @@ const countryRouter = require("./routes/countries");
 const bookCoverRouter = require("./routes/bookCover");
 const bookGenreRouter = require("./routes/bookGenre");
 const languageRouter = require("./routes/language");
+const apiRouter = require("./routes/api");
 
 // Setting u middleware
 app.set("view engine", "ejs");
@@ -41,11 +42,12 @@ app.use(cookieParser());
 app.use("/", authenticatedOrGuest, indexRouter);
 app.use("/authors", authenticatedOrGuest, authorRouter);
 app.use("/books", authenticatedOrGuest, bookRouter);
-app.use("/books/genres", authenticatedOrGuest, bookGenreRouter);
+app.use("/genres", authenticatedOrGuest, bookGenreRouter);
 app.use("/publishers", authenticatedOrGuest, publisherRouter);
 app.use("/countries", authenticatedOrGuest, countryRouter);
 app.use("/covers", authenticatedOrGuest, bookCoverRouter);
 app.use("/languages", authenticatedOrGuest, languageRouter);
+app.use("/api", apiRouter);
 
 // port
 const port = process.env.PORT || 3000;

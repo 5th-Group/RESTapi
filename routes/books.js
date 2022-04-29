@@ -54,37 +54,24 @@ router.get("/new", async (req, res) => {
 });
 
 //
-router.get("/db", async (req, res) => {
-    let icon = [];
-    try {
-        const books = await Book.find()
-            .populate("author genre language publisher")
-            .select(
-                "title pageCount description author language genre coverType createdAt publishDate publisher isbn"
-            )
-            .lean();
-        let booksImg = await Book.find().select("image imageType");
-        for (i = 0; i < booksImg.length; i++) {
-            books[i].icon = booksImg[i].iconImgPath;
-        }
-        res.json(books);
-    } catch (err) {
-        res.send(err);
-    }
-});
-
-router.get("/imgdb", async (req, res) => {
-    try {
-        let icon = [];
-        let books = await Book.find().select("image imageType");
-        books.forEach((book) => {
-            icon.push(book.iconImgPath);
-        });
-        res.json(icon);
-    } catch (err) {
-        res.send(err);
-    }
-});
+// router.get("/db", async (req, res) => {
+//     let icon = [];
+//     try {
+//         const books = await Book.find()
+//             .populate("author genre language publisher")
+//             .select(
+//                 "title pageCount description author language genre coverType createdAt publishDate publisher isbn"
+//             )
+//             .lean();
+//         let booksImg = await Book.find().select("image imageType");
+//         for (i = 0; i < booksImg.length; i++) {
+//             books[i].icon = booksImg[i].iconImgPath;
+//         }
+//         res.json(books);
+//     } catch (err) {
+//         res.send(err);
+//     }
+// });
 
 router.get("/detail/:id", getBook, async (req, res) => {
     try {
