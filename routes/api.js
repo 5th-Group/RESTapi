@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
             .populate({
                 path: "detail",
                 populate: { path: "author genre language publisher" },
-                select: "title pageCount description author language genre coverType createdAt publishDate publisher isbn",
+                select: "-image -imageType",
             });
         const booksImg = await Book.find().select("image imageType");
         for (i = 0; i < booksImg.length; i++) {
@@ -38,21 +38,54 @@ router.get("/", async (req, res) => {
 //     }
 // });
 
+// POST register
+router.post("/register", async (req, res) => {
+    const hashedPassword = await brcypt.hash(req.body.password, 10);
+
+    const user = new User({
+        username: req.body.username,
+        password: hashedPassword,
+        firstName: req.body.fname,
+        lastName: req.body.lname,
+        gender: req.body.gender,
+        address: req.body.address,
+        email: req.body.email,
+        country: req.body.country,
+        phoneNumber: req.body.phonenum,
+    });
+    try {
+        await user.save();
+        res.status(201).send({
+            infoMessage: "The account has been registered successfully.",
+        });
+    } catch (err) {
+        res.send({ errorMessage: err.message });
+    }
+});
+
+// POST login
 router.post("/login", async (req, res, next) => {
     passport.authenticate("login", async (err, user, info) => {
         try {
             if (err || !user) {
-                const error = new Error(info.message);
-                return res.send(error.message);
+                const err = new Error(info.message);
+                return res.status(401).send({ errorMessage: err.message });
             }
 
             req.login(user, { session: false }, async (error) => {
                 if (error) return next(error);
 
-                res.send(user);
+                const body = {
+                    _id: user._id,
+                    username: user.username,
+                    role: user.role,
+                };
+                const token = jwt.sign({ user: body }, "TOP_SECRET");
+
+                res.status(200).send(token);
             });
         } catch (err) {
-            return next(err.message);
+            return next({ errorMessage: err.message });
         }
     })(req, res, next);
 });

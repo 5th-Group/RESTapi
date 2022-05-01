@@ -1,5 +1,5 @@
 // Dependencies
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema({
     title: {
@@ -15,29 +15,31 @@ const bookSchema = new mongoose.Schema({
     },
     author: {
         type: [mongoose.Types.ObjectId],
-        ref: 'authors',
+        ref: "authors",
         required: true,
-        validate: v => Array.isArray(v) && v.length > 0,
+        validate: (v) => Array.isArray(v) && v.length > 0,
     },
     language: {
         type: mongoose.Types.ObjectId,
-        ref: 'languages',
+        ref: "languages",
         required: true,
     },
-    genre: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'bookGenres',
-        required: true,
-    }],
+    genre: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "bookGenres",
+            required: true,
+        },
+    ],
     coverType: {
         type: mongoose.Types.ObjectId,
         required: true,
-        ref: 'bookCovers'
+        ref: "bookCovers",
     },
     createdAt: {
         type: Date,
         required: true,
-        default: Date.now
+        default: Date.now,
     },
     image: {
         type: Buffer,
@@ -54,23 +56,26 @@ const bookSchema = new mongoose.Schema({
     publisher: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'publishers',
+        ref: "publishers",
     },
     isbn: {
         isbn10: {
             type: String,
+            default: "0",
         },
         isbn13: {
             type: String,
+            default: "0",
         },
     },
-})
+});
 
-
-bookSchema.virtual('iconImgPath').get(function() {
-    if (this.image != null && this.imageType != null ) {
-        return `data:${this.imageType};charset=utf-8;base64,${this.image.toString('base64')}`
+bookSchema.virtual("iconImgPath").get(function () {
+    if (this.image != null && this.imageType != null) {
+        return `data:${
+            this.imageType
+        };charset=utf-8;base64,${this.image.toString("base64")}`;
     }
-})
+});
 
-module.exports = mongoose.model('books', bookSchema)
+module.exports = mongoose.model("books", bookSchema);

@@ -30,7 +30,7 @@ passport.use(
 
                 return done(null, user, { message: "Logged in successfully" });
             } catch (err) {
-                return done(err.message);
+                return done(err);
             }
         }
     )

@@ -93,6 +93,7 @@ router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
 
 // Create
 router.post("/new", async (req, res) => {
+    const isbn = { isbn10: req.body.isbn10, isbn13: req.body.isbn13 };
     const book = await new Book({
         title: req.body.title,
         pageCount: req.body.pageCount,
@@ -101,13 +102,13 @@ router.post("/new", async (req, res) => {
         language: req.body.language,
         genre: req.body.genre,
         coverType: req.body.coverType,
-        publishDate: new Date(req.body.publishDate),
+        publishDate: new Date(req.body.publishDate).toISOString(),
         publisher: req.body.publisher,
-        isbn: req.body.isbn,
+        isbn: isbn,
     });
 
     const product = await new Product({
-        product: book.id,
+        detail: book.id,
         cost: req.body.cost,
         price: req.body.price,
     });
@@ -115,8 +116,8 @@ router.post("/new", async (req, res) => {
     saveImg(book, req.body.img);
 
     try {
-        await book.save();
-        await product.save();
+        await book.save()
+        await product.save()
         res.redirect("/books");
     } catch (err) {
         const authors = await Author.find({});
@@ -125,7 +126,8 @@ router.post("/new", async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
         res.render("books/new", {
-            book: req.body,
+            book: book,
+            product: product,
             authors: authors,
             languages: languages,
             publishers: publishers,
