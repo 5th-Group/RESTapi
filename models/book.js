@@ -72,9 +72,7 @@ const bookSchema = new mongoose.Schema({
 
 bookSchema.virtual("iconImgPath").get(function () {
     if (this.image != null && this.imageType != null) {
-        return `data:${
-            this.imageType
-        };charset=utf-8;base64,${this.image.toString("base64")}`;
+        return `data:${this.imageType};charset=utf-8;base64,${this.image.toString("base64")}`;
     }
 });
 

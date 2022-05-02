@@ -8,18 +8,37 @@ require("../auth/auth");
 
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find()
-            .lean()
-            .populate({
-                path: "detail",
-                populate: { path: "author genre language publisher" },
-                select: "-image -imageType",
-            });
-        const booksImg = await Book.find().select("image imageType");
-        for (i = 0; i < booksImg.length; i++) {
-            products[i].detail.icon = booksImg[i].iconImgPath;
-        }
-        res.json(products);
+        const products = await Product.find({})
+        .populate({
+            path: "detail",
+            populate: { path: "author genre language publisher",  },
+            select: "-image -imageType",
+        })
+        .lean()
+
+
+        const booksImg = await Book.find({})
+        .select("image imageType")
+        .exec((err, booksImg) => {
+            if (err) new Error(err)
+            products.forEach((product, index )=> {
+                product.icon = booksImg[index].iconImgPath
+            })
+
+            res.send(products)
+        })
+
+
+        // .exec(async (err, products) => {
+        //     const booksImg = await Book.find({}).select("image imageType");
+        //     for (i = 0; i < booksImg.length; i++) {
+        //         products[i].detail.icon = booksImg[i].iconImgPath
+        //     }
+        // })
+
+
+
+
     } catch (err) {
         res.send(err);
     }
