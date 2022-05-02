@@ -10,34 +10,27 @@ require("../auth/auth");
 router.get("/", async (req, res) => {
     try {
         const products = await Product.find({})
+        .lean()
         .populate({
             path: "detail",
-            populate: { path: "author genre language publisher",  },
+            populate: { path: "author genre language publisher", },
             select: "-image -imageType",
         })
-        .lean()
 
 
-        await Book.find({})
+
+        const booksImg = await Book.find({})
         .select("image imageType")
-        .exec((err, booksImg) => {
-            if (err) new Error(err)
-            products.forEach((product, index )=> {
-                product.icon = booksImg[index].iconImgPath
-            })
-
-            res.send(products)
-        })
 
 
-        // .exec(async (err, products) => {
-        //     const booksImg = await Book.find({}).select("image imageType");
-        //     for (i = 0; i < booksImg.length; i++) {
-        //         products[i].detail.icon = booksImg[i].iconImgPath
-        //     }
-        // })
 
 
+        for (i = 0; i < booksImg.length; i++) {
+            products[i].detail.icon = booksImg[i].iconImgPath
+        }
+
+
+        res.json(products)
 
 
     } catch (err) {
@@ -45,18 +38,19 @@ router.get("/", async (req, res) => {
     }
 });
 
-// router.get("/update", async (req, res) => {
-//     try {
-//         const books = await Book.find({});
-//         books.forEach(async (book) => {
-//             let product = await new Product();
-//             product.detail = book.id;
-//             await product.save();
-//         });
-//     } catch (error) {
-//         console.log(error);
-//     }
-// });
+router.get("/update", async (req, res) => {
+    try {
+        const books = await Book.find({});
+        books.forEach(async (book) => {
+            let product = await new Product();
+            product.detail = book.id;
+            await product.save();
+        });
+        res.redirect("/")
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 // POST register
 router.post("/register", async (req, res) => {
