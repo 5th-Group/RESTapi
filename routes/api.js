@@ -27,6 +27,13 @@ router.get("/", async (req, res) => {
 
         for (i = 0; i < booksImg.length; i++) {
             products[i].detail.icon = booksImg[i].iconImgPath
+            products[i].averageScore = 0
+            if (products[i].review.length > 0) {
+                products[i].review.forEach(review => {
+                    products[i].averageScore += review.ratedScore
+                })
+                products[i].averageScore /= products[i].review.length
+            }
         }
 
 
