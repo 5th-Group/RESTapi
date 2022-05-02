@@ -4,6 +4,7 @@ const router = express.Router();
 const Book = require("../models/book");
 const Product = require("../models/product");
 const passport = require("passport");
+const jwt = require('jsonwebtoken')
 require("../auth/auth");
 
 router.get("/", async (req, res) => {
@@ -17,7 +18,7 @@ router.get("/", async (req, res) => {
         .lean()
 
 
-        const booksImg = await Book.find({})
+        await Book.find({})
         .select("image imageType")
         .exec((err, booksImg) => {
             if (err) new Error(err)
