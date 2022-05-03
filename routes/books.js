@@ -11,24 +11,34 @@ const Product = require("../models/product");
 const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
 const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
 
+
 // Get All
-router.get("/", authenticatedOrGuest, async (req, res) => {
+router.get("/", async (req, res) => {
+    let user;
     let searchDetail = {};
     if (req.query.title != null && req.query.title != "") {
         searchDetail.title = new RegExp(req.query.title, "i");
     }
     try {
-        const books = await Book.find(searchDetail);
+        const books = await Book.find(searchDetail).lean({virtuals: true});
+        const products = await Product.find(searchDetail).lean({virtuals: true})
+        if (req.user != null) {
+            user = req.user
+        }
         res.render("books/index", {
             books: books,
+            products: products,
             searchDetail: req.query,
             isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     } catch (err) {
         res.send(err);
     }
 });
 
+
+//GET new
 router.get("/new", async (req, res) => {
     try {
         const authors = await Author.find({});
@@ -53,6 +63,8 @@ router.get("/new", async (req, res) => {
     }
 });
 
+
+// GET detail
 router.get("/detail/:id", getBook, async (req, res) => {
     try {
         const book = await res.book.populate("author genre language publisher");

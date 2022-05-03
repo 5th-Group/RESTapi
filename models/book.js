@@ -1,5 +1,6 @@
 // Dependencies
 const mongoose = require("mongoose");
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals')
 
 const bookSchema = new mongoose.Schema({
     title: {
@@ -75,5 +76,9 @@ bookSchema.virtual("iconImgPath").get(function () {
         return `data:${this.imageType};charset=utf-8;base64,${this.image.toString("base64")}`;
     }
 });
+
+
+bookSchema.plugin(mongooseLeanVirtuals)
+
 
 module.exports = mongoose.model("books", bookSchema);

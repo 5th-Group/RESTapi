@@ -46,7 +46,7 @@ passport.use(
         },
         async (token, done) => {
             try {
-                console.log("Authorized");
+                // console.log(token.user.role)
                 return done(null, token.user);
             } catch (err) {
                 done(err);

@@ -47,7 +47,7 @@ app.use("/publishers", authenticatedOrGuest, publisherRouter);
 app.use("/countries", authenticatedOrGuest, countryRouter);
 app.use("/covers", authenticatedOrGuest, bookCoverRouter);
 app.use("/languages", authenticatedOrGuest, languageRouter);
-app.use("/api", apiRouter);
+app.use("/api", authenticatedOrGuest, apiRouter);
 
 // port
 const port = process.env.PORT || 3000;
