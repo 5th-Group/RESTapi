@@ -20,11 +20,16 @@ router.get("/", async (req, res) => {
         searchDetail.title = new RegExp(req.query.title, "i");
     }
     try {
-        const books = await Book.find(searchDetail).lean({virtuals: true});
-        const products = await Product.find(searchDetail).lean({virtuals: true})
+        const books = await Book.find(searchDetail)
+        const products = await Product.find(searchDetail)
+        .lean({virtuals: true})
+        .populate("review")
+
         if (req.user != null) {
             user = req.user
         }
+
+        // res.send({books: books})
         res.render("books/index", {
             books: books,
             products: products,

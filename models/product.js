@@ -28,17 +28,6 @@ const productSchema = new mongoose.Schema({
 });
 
 
-productSchema.virtual("averageScore").get(function () {
-    let averageScore = 0
-    if(this.review.length > 0) {
-        this.review.forEarch(review => {
-            averageScore += review.ratedScore
-        })
-        averageScore /= this.review.length
-    }
-    return averageScore
-})
-
 productSchema.set('toJSON', {virtuals: true})
 
 productSchema.plugin(mongooseLeanVirtuals)

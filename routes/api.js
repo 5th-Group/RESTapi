@@ -63,7 +63,7 @@ router.get("/product/:id", async(req, res) => {
         const product = await Product.findById(req.params.id)
         .lean({virtuals: true})
         .populate({
-            path: "detail",
+            path: "detail review",
             populate: { path: "author genre language publisher" },
             select: "-image -imageType",
         })
@@ -122,7 +122,7 @@ router.post("/login", async (req, res, next) => {
 
             req.login(user, { session: false }, async (error) => {
                 if (error) return next(error);
-                
+
 
                 const body = {
                     _id: user._id,
@@ -140,21 +140,44 @@ router.post("/login", async (req, res, next) => {
 });
 
 
+// GET review
+router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
+
+    const review = await new Review()
+    const product = await Product.findById(req.params.id)
+
+    try {
+
+    res.render("review/new", {review: review, product: product, isAuthenticated: req.isAuthenticated()})
+
+
+    // res.status(201).send({infoMessage: "Your review have been posted successfully."})
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+
 // POST review
 router.post('/review/:id/new', checkAuthenticated, async (req, res) => {
-    try {
+
     const review = await new Review({
         product: req.params.id,
         review: req.body.review,
-        reviewer: req.user.id,
+        reviewer: req.user._id,
         ratedScore: req.body.ratedScore,
     })
 
+    try {
+
     const product = await Product.findById(req.params.id)
     product.review.push(review.id)
-    await product.save()
+
 
     await review.save()
+    await product.save()
+
+
 
     res.status(201).send({infoMessage: "Your review have been posted successfully."})
     } catch (err) {

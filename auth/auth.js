@@ -45,7 +45,7 @@ passport.use(
             secretOrKey: "TOP_SECRET",
             jwtFromRequest: ExtractJWT.fromExtractors([
                 (req) => cookieExtractor(req),
-                ExtractJWT.fromAuthHeaderAsBearerToken()
+                ExtractJWT.fromAuthHeaderAsBearerToken(),
             ]),
         },
         async (token, done) => {
