@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
     try {
         const products = await Product.find({})
         .lean()
+        .populate("review")
         .populate({
             path: "detail",
             populate: { path: "author genre language publisher", },
@@ -27,8 +28,11 @@ router.get("/", async (req, res) => {
             products[i].detail.icon = booksIcon[i].iconImgPath
             products[i].averageScore = 0
             if (products[i].review.length > 0) {
+                
                 products[i].review.forEach(review => {
-                    products[i].averageScore += review.ratedScore
+                    if (review.ratedScore) {
+                        products[i].averageScore += review.ratedScore
+                    }
                 })
                 products[i].averageScore /= products[i].review.length
             }
@@ -62,8 +66,9 @@ router.get("/product/:id", async(req, res) => {
     try {
         const product = await Product.findById(req.params.id)
         .lean({virtuals: true})
+        .populate("review")
         .populate({
-            path: "detail review",
+            path: "detail",
             populate: { path: "author genre language publisher" },
             select: "-image -imageType",
         })
@@ -76,6 +81,16 @@ router.get("/product/:id", async(req, res) => {
 
 
         product.detail.icon = booksIcon.iconImgPath
+        product.averageScore = 0
+        if (product.review.length > 0) {
+            
+            product.review.forEach(review => {
+                if (review.ratedScore) {
+                    product.averageScore += review.ratedScore
+                }
+            })
+            product.averageScore /= product.review.length
+        }
 
 
         res.json(product)
