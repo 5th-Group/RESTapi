@@ -28,6 +28,9 @@ passport.use(
                     });
                 }
 
+
+                delete user.password
+
                 return done(null, user, { message: "Logged in successfully" });
             } catch (err) {
                 return done(err);
@@ -42,6 +45,7 @@ passport.use(
             secretOrKey: "TOP_SECRET",
             jwtFromRequest: ExtractJWT.fromExtractors([
                 (req) => cookieExtractor(req),
+                ExtractJWT.fromAuthHeaderAsBearerToken()
             ]),
         },
         async (token, done) => {
