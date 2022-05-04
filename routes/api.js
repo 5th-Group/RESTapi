@@ -130,7 +130,7 @@ router.post("/login", async (req, res, next) => {
                 };
                 const token = jwt.sign({ user: body }, "TOP_SECRET");
 
-                res.status(200).send(token);
+                res.status(200).send({token: token, userData: user});
             });
         } catch (err) {
             return next({ errorMessage: err.message });
