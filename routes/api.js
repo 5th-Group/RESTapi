@@ -3,7 +3,8 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/book");
 const Product = require("../models/product");
-const Review = require('../models/review')
+const Review = require('../models/review');
+const USer = require('../models/users');
 const passport = require("passport");
 const jwt = require('jsonwebtoken')
 require("../auth/auth");
@@ -167,6 +168,31 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
 
 
     // res.status(201).send({infoMessage: "Your review have been posted successfully."})
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+
+router.put('user/:id/update', checkAuthenticated, async (req, res) => {
+    let user
+    try {
+    
+        user = await User.findById(req.params.id)
+        user.username = req.body.username
+        user.password = req.body.password
+        user.firstName = req.body.firstName
+        user.lastName = req.body.lastName
+        user.gender = req.body.gender
+        user.address = req.body.address
+        user.email = req.body.email
+        user.role = req.body.role
+        user.country = req.body.country
+        user.phoneNumber = req.body.phoneNumber
+
+        await user.save();
+        res.status(204).send({infoMessage: "Successful Update."})
+
     } catch (err) {
         res.send(err)
     }
