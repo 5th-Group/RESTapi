@@ -20,14 +20,11 @@ router.get("/", async (req, res) => {
         searchDetail.title = new RegExp(req.query.title, "i");
     }
     try {
-        const books = await Book.find(searchDetail)
+        const books = await Book.find(searchDetail).lean({virtuals: true})
         const products = await Product.find(searchDetail)
         .lean({virtuals: true})
         .populate("review")
         
-        products.forEach(product => {
-            
-        })
 
         if (req.user != null) {
             user = req.user
@@ -102,25 +99,29 @@ router.get("/detail/:id", getBook, async (req, res) => {
 
 // GET EDIT PAGE
 router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
-    let user;
+    let user = typeof(req.user)  !== 'undefined' ? req.user : undefined
+
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
         const publishers = await Publisher.find({});
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
-        const book = await res.book.populate("author genre language publisher");
-        const product = await res.product;
 
-        if(typeof req.user !== 'undefined') {
-            user = req.user
-        }
+        const book = await Book.findById(req.params.id)
+        .populate("author genre language publisher coverType");
+
+        const date = book.publishDate.toISOString().split('T')[0]
+        
+
+        const product = await Product.findOne({detail : {_id : req.params.id}});
 
 
         res.render("books/edit", {
             book: book,
             product: product,
             authors: authors,
+            date: date,
             languages: languages,
             publishers: publishers,
             bookCovers: bookCovers,
@@ -154,7 +155,7 @@ router.post("/new", async (req, res) => {
         language: req.body.language,
         genre: req.body.genre,
         coverType: req.body.coverType,
-        publishDate: new Date(req.body.publishDate).toISOString(),
+        publishDate: new Date(req.body.publishDate).toISOString().split('T')[0],
         publisher: req.body.publisher,
         isbn: isbn,
     });
@@ -193,14 +194,17 @@ router.post("/new", async (req, res) => {
 });
 
 // Update
-router.put("/detail/:id/:type", getBook, getProduct, async (req, res) => {
+router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
     let book;
     let product;
-    let user = req.user != null ? req.user : undefined ;
+
+    let user = typeof(req.user)  !== 'undefined' ? req.user : undefined
+
     try {
-        book = await res.book;
+        book = await Book.findById(req.params.id);
         
-        product = await res.product;
+        product = await Product.findOne({detail : {_id : req.params.id}});
+
 
         book.title = req.body.title;
         book.pageCount = req.body.pageCount;
@@ -209,9 +213,10 @@ router.put("/detail/:id/:type", getBook, getProduct, async (req, res) => {
         book.language = req.body.language;
         book.genre = req.body.genre;
         book.coverType = req.body.coverType;
-        book.publishDate = new Date(req.body.publishDate);
+        book.publishDate = new Date(req.body.publishDate).toISOString().split('T')[0];
         book.publisher = req.body.publisher;
-        book.isbn = req.body.isbn;
+        book.isbn.isbn10 = req.body.isbn10;
+        book.isbn.isbn13 = req.body.isbn13;
 
 
 
@@ -232,9 +237,13 @@ router.put("/detail/:id/:type", getBook, getProduct, async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
 
+        const product = {cost : req.body.cost, price : req.body.price}
+
+
         res.render("books/edit", {
             book: req.body,
             product: product,
+            date: req.body.publishDate,
             authors: authors,
             languages: languages,
             publishers: publishers,

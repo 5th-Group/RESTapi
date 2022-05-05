@@ -62,11 +62,10 @@ const bookSchema = new mongoose.Schema({
     isbn: {
         isbn10: {
             type: String,
-            default: "0",
+
         },
         isbn13: {
             type: String,
-            default: "0",
         },
     },
 });
@@ -77,6 +76,16 @@ bookSchema.virtual("iconImgPath").get(function () {
     }
 });
 
+
+bookSchema.pre('save', {document: true}, function(next) {
+    console.log(this.isbn.isbn10)
+    console.log(this.isbn.isbn13)
+    if ((this.isbn.isbn10 == null || this.isbn.isbn10 == '') && (this.isbn.isbn13 == null || this.isbn.isbn13 == '')) {
+        next(new Error(`Atleast one ISBN number is required.`))
+    } else {
+        next()
+    }
+})
 
 bookSchema.plugin(mongooseLeanVirtuals)
 

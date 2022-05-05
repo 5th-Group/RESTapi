@@ -69,15 +69,15 @@
 </div>
 <div>
     <label>Publication Date</label>
-    <input type="date" name="publishDate" value="<%= book.publishDate == null ? '' : book.publishDate %>"/>
+    <input type="date" name="publishDate" value="<%= date == null ? '' : date %>"/>
 </div>
 <div>
     <label>ISBN 10</label>
-    <input type="text" name="isbn10"/>
+    <input type="text" name="isbn10" value="<%= book.isbn.isbn10 %>"/>
 </div>
 <div>
     <label>ISBN 13</label>
-    <input type="text" name="isbn13" />
+    <input type="text" name="isbn13" value="<%= book.isbn.isbn13 %>" />
 </div>
 <div>
     <label for="img">Cover Image</label>

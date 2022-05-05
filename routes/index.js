@@ -26,6 +26,7 @@ router.get("/login", authenticatedOrGuest, function (req, res) {
 
 // GET register page
 router.get("/register", async (req, res) => {
+
     const countries = await Country.find({});
     const user = await new User();
     res.render("authentication/register", {
