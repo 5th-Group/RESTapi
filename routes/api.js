@@ -180,7 +180,7 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
 })
 
 
-router.put('user/:id/update', checkAuthenticated, async (req, res) => {
+router.put('/user/:id/update', checkAuthenticated, async (req, res) => {
     let user
     try {
     

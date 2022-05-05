@@ -237,12 +237,16 @@ router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
 
-        const product = {cost : req.body.cost, price : req.body.price}
+        const productPayload = {cost : req.body.cost, price : req.body.price}
 
+        const isbn = {isbn10 : req.body.isbn10, isbn13: req.body.isbn13}
+
+        const bookPayload = req.body
+        bookPayload.isbn = isbn
 
         res.render("books/edit", {
-            book: req.body,
-            product: product,
+            book: bookPayload,
+            product: productPayload,
             date: req.body.publishDate,
             authors: authors,
             languages: languages,
