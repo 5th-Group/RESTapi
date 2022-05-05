@@ -5,6 +5,12 @@ const Country = require("../models/countries");
 
 // GET all
 router.get("/", async (req, res) => {
+    let user;
+
+    if (typeof req.user !== 'undefined') {
+        user = req.user
+    }
+
     let searchDetail = {};
     if (req.query.name != null && req.query.name != "") {
         searchDetail.name = new RegExp(req.query.name, "i");
@@ -14,7 +20,7 @@ router.get("/", async (req, res) => {
         res.render("countries/index", {
             countries: countries,
             searchDetail: req.body,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     } catch (err) {
         console.log(err.message);
@@ -23,12 +29,27 @@ router.get("/", async (req, res) => {
 
 // GET new
 router.get("/new", (req, res) => {
+    let user;
+
+    if (typeof req.user !== 'undefined') {
+        user = req.user
+    }
+
     const country = new Country();
-    res.render("countries/new", { country: country });
+    res.render("countries/new", { 
+        country: country,
+        user: user,
+    });
 });
 
 // POST
 router.post("/new", async (req, res) => {
+    let user;
+
+    if (typeof req.user !== 'undefined') {
+        user = req.user
+    }
+
     const country = new Country({
         name: req.body.name,
         code: req.body.code,
@@ -39,6 +60,7 @@ router.post("/new", async (req, res) => {
     } catch (err) {
         res.render("countries/new", {
             country: country,
+            user: user,
             errorMessage: err.message,
         });
     }

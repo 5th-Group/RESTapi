@@ -97,7 +97,6 @@ router.post("/register", async (req, res) => {
         const countries = await Country.find({});
 
         res.render("authentication/register", {
-            user: req.body,
             countries: countries,
             errorMessage: err.message,
         });

@@ -38,7 +38,6 @@ router.get("/", async (req, res) => {
             books: books,
             products: products,
             searchDetail: req.query,
-            isAuthenticated: req.isAuthenticated(),
             user: user,
         });
     } catch (err) {
@@ -49,6 +48,7 @@ router.get("/", async (req, res) => {
 
 //GET new
 router.get("/new", async (req, res) => {
+    let user;
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
@@ -57,6 +57,13 @@ router.get("/new", async (req, res) => {
         const bookGenres = await BookGenre.find({});
         const book = await new Book();
         const product = await new Product();
+
+        if(typeof req.user !== 'undefined') {
+            user = req.user
+        }
+
+        
+
         res.render("books/new", {
             book: book,
             authors: authors,
@@ -65,7 +72,7 @@ router.get("/new", async (req, res) => {
             bookCovers: bookCovers,
             bookGenres: bookGenres,
             product: product,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     } catch (err) {
         console.log({ message: err.message });
@@ -73,13 +80,20 @@ router.get("/new", async (req, res) => {
 });
 
 
+
 // GET detail
 router.get("/detail/:id", getBook, async (req, res) => {
+    let user;
     try {
         const book = await res.book.populate("author genre language publisher");
+
+        if(typeof req.user !== 'undefined') {
+            user = req.user
+        }
+
         res.render("books/detail", {
             book: book,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     } catch (err) {
         res.send({ message: err.message });
@@ -88,6 +102,7 @@ router.get("/detail/:id", getBook, async (req, res) => {
 
 // GET EDIT PAGE
 router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
+    let user;
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
@@ -97,6 +112,11 @@ router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
         const book = await res.book.populate("author genre language publisher");
         const product = await res.product;
 
+        if(typeof req.user !== 'undefined') {
+            user = req.user
+        }
+
+
         res.render("books/edit", {
             book: book,
             product: product,
@@ -105,15 +125,26 @@ router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
             publishers: publishers,
             bookCovers: bookCovers,
             bookGenres: bookGenres,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     } catch (err) {
         res.redirect("/books");
     }
 });
 
+
+// // GET Edit price
+// router.get("/detail/:id/")
+
 // Create
 router.post("/new", async (req, res) => {
+    let user;
+
+    if(typeof req.user !== 'undefined') {
+        user = req.user
+    }
+
+
     const isbn = { isbn10: req.body.isbn10, isbn13: req.body.isbn13 };
     const book = await new Book({
         title: req.body.title,
@@ -146,6 +177,7 @@ router.post("/new", async (req, res) => {
         const publishers = await Publisher.find({});
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
+
         res.render("books/new", {
             book: book,
             product: product,
@@ -155,17 +187,19 @@ router.post("/new", async (req, res) => {
             bookCovers: bookCovers,
             bookGenres: bookGenres,
             errorMessage: err.message,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     }
 });
 
 // Update
-router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
+router.put("/detail/:id/:type", getBook, getProduct, async (req, res) => {
     let book;
     let product;
+    let user = req.user != null ? req.user : undefined ;
     try {
         book = await res.book;
+        
         product = await res.product;
 
         book.title = req.body.title;
@@ -179,20 +213,41 @@ router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
         book.publisher = req.body.publisher;
         book.isbn = req.body.isbn;
 
+
+
         product.cost = req.body.cost;
         product.price = req.body.price;
 
         await book.save();
         await product.save();
+
+
+
         res.redirect("/books");
     } catch (err) {
+
+        const authors = await Author.find({});
+        const languages = await Language.find({});
+        const publishers = await Publisher.find({});
+        const bookCovers = await BookCover.find({});
+        const bookGenres = await BookGenre.find({});
+
         res.render("books/edit", {
             book: req.body,
+            product: product,
+            authors: authors,
+            languages: languages,
+            publishers: publishers,
+            bookCovers: bookCovers,
+            bookGenres: bookGenres,
             errorMessage: err.message,
-            isAuthenticated: req.isAuthenticated(),
+            user: user,
         });
     }
 });
+
+
+
 
 // Delete
 router.delete("/detail/:id", async (req, res) => {

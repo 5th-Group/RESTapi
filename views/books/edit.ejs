@@ -1,6 +1,17 @@
 <h2>Edit <%= book.title %>'s info</h2>
-<form action="/books/detail/<%= book._id %>/edit?_method=PUT" method="POST">
-    <%- include('input_form_partial.ejs') %>
-    <a href="/books"><input type="button" value="Cancle"></a>
-    <button type="submit">Edit</button>
-</form>
+<br>
+<br>
+<div>
+    <form action="/books/detail/<%= book._id %>/edit-book?_method=PUT" method="POST">
+        <label style="font-weight: bold;">Product Detail</label>
+        <br>
+        <%- include('product_input_form_partial.ejs') %> 
+        <br>
+        <br>
+        <label style="font-weight: bold;">Book Detail</label>
+        <br>
+        <%- include('book_input_form_partial.ejs') %>
+        <a href="/books"><input type="button" value="Cancle"></a>
+        <button type="submit">Update</button>
+    </form>
+</div>

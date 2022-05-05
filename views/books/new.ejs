@@ -1,6 +1,15 @@
 <h2>Add book</h2>
 <form action="/books/new" method="POST">
-    <%- include('input_form_partial.ejs') %> 
-    <a href="/books">Cancel</a>
+    <label style="font-weight: bold;">Product Detail</label>
+    <br>
+    <%- include('product_input_form_partial.ejs') %> 
+    <br>
+    <br>
+    <label style="font-weight: bold;">Book Detail</label>
+    <br>
+    <%- include('book_input_form_partial.ejs') %> 
+
+
+    <a href="/books"><input type="button" value="Cancle"></a>
     <button type="submit">Add</button>
 </form>

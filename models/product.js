@@ -13,12 +13,14 @@ const productSchema = new mongoose.Schema({
     cost: {
         type: mongoose.Types.Decimal128,
         required: true,
+        min: 0,
         default: 0,
         get: toFloat,
     },
     price: {
         type: mongoose.Types.Decimal128,
         required: true,
+        min: 0,
         default: 0,
         get: toFloat,
     },
@@ -28,7 +30,7 @@ const productSchema = new mongoose.Schema({
             ref: "reviews",
         },
     ],
-}, {toJSON: {getters: true}});
+});
 
 function toFloat(value) {
     if (typeof value != "undefined") {
@@ -38,7 +40,7 @@ function toFloat(value) {
 }
 
 
-productSchema.set('toJSON', { virtuals: true})
+productSchema.set('toJSON', { getters: true, virtuals: true})
 
 productSchema.plugin(mongooseLeanVirtuals)
 productSchema.plugin(mongooseLeanGetters)

@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
                         products[i].averageScore += review.ratedScore
                     }
                 })
-                products[i].averageScore /= products[i].review.length
+                products[i].averageScore = Number(parseFloat(products[i].averageScore / products[i].review.length).toFixed(1))
             }
         }
 
