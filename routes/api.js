@@ -4,7 +4,7 @@ const router = express.Router();
 const Book = require("../models/book");
 const Product = require("../models/product");
 const Review = require('../models/review');
-const USer = require('../models/users');
+const User = require('../models/users');
 const passport = require("passport");
 const jwt = require('jsonwebtoken')
 require("../auth/auth");

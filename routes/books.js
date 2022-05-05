@@ -24,6 +24,10 @@ router.get("/", async (req, res) => {
         const products = await Product.find(searchDetail)
         .lean({virtuals: true})
         .populate("review")
+        
+        products.forEach(product => {
+            
+        })
 
         if (req.user != null) {
             user = req.user
