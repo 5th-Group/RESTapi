@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
     try {
         const products = await Product.find({})
         .lean()
-        .populate("review")
+        .populate("review", "ratedScore")
         .populate({
             path: "detail",
             populate: { path: "author genre language publisher", },
@@ -67,7 +67,13 @@ router.get("/product/:id", async(req, res) => {
     try {
         const product = await Product.findById(req.params.id)
         .lean({virtuals: true})
-        .populate("review")
+        .populate({
+            path: "review",
+            populate: { 
+                path: "reviewer", 
+                select: "firstName lastName",
+            },
+        })
         .populate({
             path: "detail",
             populate: { path: "author genre language publisher" },
