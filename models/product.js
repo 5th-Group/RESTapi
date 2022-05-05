@@ -1,6 +1,7 @@
 // Dependencies
 const mongoose = require("mongoose");
 const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
+const mongooseLeanGetters = require('mongoose-lean-getters');
 
 
 const productSchema = new mongoose.Schema({
@@ -12,12 +13,14 @@ const productSchema = new mongoose.Schema({
     cost: {
         type: mongoose.Types.Decimal128,
         required: true,
-        default: "0",
+        default: 0,
+        get: toFloat,
     },
     price: {
         type: mongoose.Types.Decimal128,
         required: true,
-        default: "0",
+        default: 0,
+        get: toFloat,
     },
     review: [
         {
@@ -25,11 +28,20 @@ const productSchema = new mongoose.Schema({
             ref: "reviews",
         },
     ],
-});
+}, {toJSON: {getters: true}});
+
+function toFloat(value) {
+    if (typeof value != "undefined") {
+        return parseFloat(value.toString())
+    }
+    return value
+}
 
 
-productSchema.set('toJSON', {virtuals: true})
+productSchema.set('toJSON', { virtuals: true})
 
 productSchema.plugin(mongooseLeanVirtuals)
+productSchema.plugin(mongooseLeanGetters)
+
 
 module.exports = mongoose.model("products", productSchema);

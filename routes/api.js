@@ -12,7 +12,7 @@ require("../auth/auth");
 router.get("/", async (req, res) => {
     try {
         const products = await Product.find({})
-        .lean()
+        .lean({getters: true})
         .populate("review", "ratedScore")
         .populate({
             path: "detail",
@@ -48,25 +48,25 @@ router.get("/", async (req, res) => {
     }
 });
 
-// router.get("/update", async (req, res) => {
-//     try {
-//         const books = await Book.find({});
-//         books.forEach(async (book) => {
-//             let product = await new Product();
-//             product.detail = book.id;
-//             await product.save();
-//         });
-//         res.redirect("/")
-//     } catch (error) {
-//         console.log(error);
-//     }
-// });
+router.get("/update", async (req, res) => {
+    try {
+        const books = await Book.find({});
+        books.forEach(async (book) => {
+            let product = await new Product();
+            product.detail = book.id;
+            await product.save();
+        });
+        res.redirect("/")
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 
 router.get("/product/:id", async(req, res) => {
     try {
         const product = await Product.findById(req.params.id)
-        .lean({virtuals: true})
+        .lean({virtuals: true, getters: true})
         .populate({
             path: "review",
             populate: { 

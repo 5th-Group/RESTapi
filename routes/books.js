@@ -9,7 +9,7 @@ const Publisher = require("../models/publisher");
 const BookGenre = require("../models/bookGenre");
 const Product = require("../models/product");
 const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
-const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
+// const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
 
 
 // Get All
