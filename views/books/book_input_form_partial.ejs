@@ -73,11 +73,11 @@
 </div>
 <div>
     <label>ISBN 10</label>
-    <input type="text" name="isbn10" value="<%= typeof(book.isbn.isbn10) !== 'undefined' ? '' : book.isbn.isbn10 %>"/>
+    <input type="text" name="isbn10" value="<%= typeof(book.isbn.isbn10) == 'undefined' ? '' : book.isbn.isbn10 %>"/>
 </div>
 <div>
     <label>ISBN 13</label>
-    <input type="text" name="isbn13" value="<%= typeof(book.isbn.isbn13) !== 'undefined' ? '' : book.isbn.isbn13 %>" />
+    <input type="text" name="isbn13" value="<%= typeof(book.isbn.isbn13) == 'undefined' ? '' : book.isbn.isbn13 %>" />
 </div>
 <div>
     <label for="img">Cover Image</label>
