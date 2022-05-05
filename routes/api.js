@@ -1,10 +1,11 @@
 //Dependencies
 const express = require("express");
 const router = express.Router();
-const Book = require("../models/book");
+// const Book = require("../models/book");
 const Product = require("../models/product");
 const Review = require('../models/review');
 const User = require('../models/users');
+const { Order, OrderDetail } = require('../models/order')
 const passport = require("passport");
 const jwt = require('jsonwebtoken')
 require("../auth/auth");
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
         .populate("review", "ratedScore")
         .populate({
             path: "detail",
-            populate: { path: "author genre language publisher"},
+            populate: { path: "author genre language publisher", select: "-languageCode -dateOfBirth -biography -code -contact"},
             select: "-image -imageType"
         })
 
@@ -30,14 +31,11 @@ router.get("/", async (req, res) => {
 
             // delete product.detail.image;
             // delete product.detail.imageType;
-
-
-            products[i].averageScore = 0
-
         }
 
 
         for (i = 0; i < products.length; i++) {
+            products[i].averageScore = 0
             if (products[i].review.length > 0) {
                     
                 products[i].review.forEach(review => {
@@ -189,6 +187,8 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
 })
 
 
+
+// PUT user
 router.put('/user/:id/update', checkAuthenticated, async (req, res) => {
     let user
     try {
@@ -211,6 +211,23 @@ router.put('/user/:id/update', checkAuthenticated, async (req, res) => {
     } catch (err) {
         res.send(err)
     }
+})
+
+
+// POST Order
+router.post('/order/create', async (req, res) => {
+
+    
+    res.send(req.body)
+    // const order = await new Order({
+
+    // })
+
+    // try {
+
+    // } catch (err) {
+    //     res.send(err)
+    // }
 })
 
 

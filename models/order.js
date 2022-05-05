@@ -5,8 +5,19 @@ const mongoose = require('mongoose')
 const orderSchema = new mongoose.Schema({
     products: [
         {
-            type: mongoose.Types.ObjectId,
-            required: true,
+            detail: {
+                type: mongoose.Types.ObjectId,
+                required: true,
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                default: 1
+            },
+            total: {
+                type: mongoose.Types.Decimal128,
+                required: true,
+            }
         }
     ],
     createdAt: {
@@ -17,7 +28,7 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: "received",
+        default: "Received",
     },
     customer: {
         type: mongoose.Types.ObjectId,
@@ -28,3 +39,14 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
 })
+
+
+const detailSchema = new mongoose.Schema({
+
+})
+
+
+module.exports = {
+    Order: mongoose.model('orders', orderSchema),
+    OrderDetail: mongoose.model('orderDetails', detailSchema),
+}

@@ -24,10 +24,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    address: {
-        type: Array,
-        required: true,
-    },
+    address: [{
+        type: {
+            type: String,
+            required: true,
+            default: "Home"
+        },
+        location: {
+            type: String,
+            required: true,
+        }
+    }],
     email: {
         type: String,
         required: true,
