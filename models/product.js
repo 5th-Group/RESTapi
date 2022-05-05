@@ -39,8 +39,17 @@ function toFloat(value) {
     return value
 }
 
+productSchema.virtual("iconImgPath").get(function () {
+    // console.log(this.detail)
+    if (this.detail.image != null && this.detail.imageType != null) {
+        return `data:${this.imageType};charset=utf-8;base64,${this.image.toString("base64")}`;
+    }
+});
 
-productSchema.set('toJSON', { getters: true, virtuals: true})
+
+
+productSchema.set('toJSON', { getters: true})
+productSchema.set('toObject', { getters: true})
 
 productSchema.plugin(mongooseLeanVirtuals)
 productSchema.plugin(mongooseLeanGetters)

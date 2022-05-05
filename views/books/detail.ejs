@@ -1,19 +1,21 @@
-<h2><%= book.title %></h2>
-<img src="<%= book.iconImgPath %>" width="100" height="150" />
+<h2><%= product.detail.title %></h2>
+<img src="<%= product.detail.icon %>" width="100" height="150" />
+<h4><%= product.price%> VND</h4>
 
+<br>
 <ul>
-    <li>Page count: <%= book.pageCount %></li>
+    <li>Page count: <%= product.detail.pageCount %></li>
     <li>Author:</li>
     <ul>
-        <% book.author.map(author => { %> <% const middleName =
+        <% product.detail.author.map(author => { %> <% const middleName =
         author.middleName == null ? " " : " " + author.middleName + " " %>
         <li><%= author.lastName + middleName + author.firstName %></li>
         <% }) %>
     </ul>
-    <% genreList = book.genre.map( genre => { %> <% return genre.name %> <% })
+    <% genreList = product.detail.genre.map( genre => { %> <% return genre.name %> <% })
     %>
     <li>Genre: <%= genreList.join(' ')%></li>
-    <li>Language: <%= book.language.name %></li>
-    <li>Publish Date: <%= book.publishDate %></li>
-    <li>Publisher: <%= book.publisher.name %></li>
+    <li>Language: <%= product.detail.language.name %></li>
+    <li>Publish Date: <%= product.detail.publishDate %></li>
+    <li>Publisher: <%= product.detail.publisher.name %></li>
 </ul>

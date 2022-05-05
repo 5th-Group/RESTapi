@@ -10,13 +10,13 @@
 <a href="/covers"><input type="button" value="Go to book's covers"></a>
 <br>
 <br>
-<% books.forEach((book, index) => { %>
+<% products.forEach(product => { %>
     <div>
-        <a href="/books/detail/<%=book._id%>"><img src="<%= book.iconImgPath %>" width="100" height="150"></a>
-        <h4><%= products[index].price%> VND</h4>
-        <a href="/books/detail/<%= book._id %>/edit"><input type="button" value="Edit"></a>
+        <a href="/books/detail/<%=product._id%>"><img src="<%= product.detail.icon %>" width="100" height="150"></a>
+        <h4><%= product.price%> VND</h4>
+        <a href="/books/detail/<%= product._id %>/edit"><input type="button" value="Edit"></a>
         <%- include("../partials/delete_form.ejs", 
-            {url: `/books/detail/${book._id}`}) %>
+            {url: `/books/detail/${product._id}`}) %>
 
     </div>
 <% })%> 

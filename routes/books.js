@@ -15,24 +15,46 @@ const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
 // Get All
 router.get("/", async (req, res) => {
     let user;
+
+    if (req.user != null) {
+        user = req.user
+    }
+
     let searchDetail = {};
     if (req.query.title != null && req.query.title != "") {
         searchDetail.title = new RegExp(req.query.title, "i");
     }
     try {
-        const books = await Book.find(searchDetail).lean({virtuals: true})
-        const products = await Product.find(searchDetail)
-        .lean({virtuals: true})
-        .populate("review")
+        // const books = await Book.find(searchDetail).lean({virtuals: true})
+        const products = await Product.find({})
+        .lean({getters: true,})
+        .populate("review", "ratedScore")
+        .populate({
+            path: "detail",
+            populate: { path: "author genre language publisher" },
+        })
+
+
+
+        for (i = 0; i < products.length; i++) {
+            products[i].detail.icon = parseImg(products[i].detail.image, products[i].detail.imageType)
+            products[i].averageScore = 0
+            if (products[i].review.length > 0) {
+                
+                products[i].review.forEach(review => {
+                    if (review.ratedScore) {
+                        products[i].averageScore += review.ratedScore
+                    }
+                })
+                products[i].averageScore = Number(parseFloat(products[i].averageScore / products[i].review.length).toFixed(1))
+            }
+        }
         
 
-        if (req.user != null) {
-            user = req.user
-        }
 
-        // res.send({books: books})
+
         res.render("books/index", {
-            books: books,
+            // books: books,
             products: products,
             searchDetail: req.query,
             user: user,
@@ -72,24 +94,58 @@ router.get("/new", async (req, res) => {
             user: user,
         });
     } catch (err) {
-        console.log({ message: err.message });
+        res.send({ message: err.message });
     }
 });
 
 
 
 // GET detail
-router.get("/detail/:id", getBook, async (req, res) => {
+router.get("/detail/:id", async (req, res) => {
     let user;
-    try {
-        const book = await res.book.populate("author genre language publisher");
 
-        if(typeof req.user !== 'undefined') {
-            user = req.user
+    if(typeof req.user !== 'undefined') {
+        user = req.user
+    }
+
+    try {
+        const product = await Product.findById(req.params.id)
+        .lean({virtuals: true, getters: true})
+        .populate({
+            path: "review",
+            populate: { 
+                path: "reviewer", 
+                select: "firstName lastName",
+            },
+        })
+        .populate({
+            path: "detail",
+            populate: { path: "author genre language publisher" },
+            select: "-image -imageType",
+        })
+
+
+        const booksIcon = await Book.findById(product.detail._id)
+        .select("image imageType")
+        .lean({virtuals: true})
+
+        product.detail.icon = booksIcon.iconImgPath
+        product.averageScore = 0
+        if (product.review.length > 0) {
+            
+            product.review.forEach(review => {
+                if (review.ratedScore) {
+                    product.averageScore += review.ratedScore
+                }
+            })
+            product.averageScore /= product.review.length
         }
 
+        // console.log(product)
+
         res.render("books/detail", {
-            book: book,
+            // book: book,
+            product: product,
             user: user,
         });
     } catch (err) {
@@ -98,8 +154,11 @@ router.get("/detail/:id", getBook, async (req, res) => {
 });
 
 // GET EDIT PAGE
-router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
+router.get("/detail/:id/edit", async (req, res) => {
     let user = typeof(req.user)  !== 'undefined' ? req.user : undefined
+
+    let book;
+    let product;
 
     try {
         const authors = await Author.find({});
@@ -108,13 +167,13 @@ router.get("/detail/:id/edit", getBook, getProduct, async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
 
-        const book = await Book.findById(req.params.id)
+        product = await Product.findById(req.params.id)
+
+        book = await Book.findById(product.detail)
         .populate("author genre language publisher coverType");
 
         const date = book.publishDate.toISOString().split('T')[0]
         
-
-        const product = await Product.findOne({detail : {_id : req.params.id}});
 
 
         res.render("books/edit", {
@@ -194,16 +253,16 @@ router.post("/new", async (req, res) => {
 });
 
 // Update
-router.put("/detail/:id/edit", getBook, getProduct, async (req, res) => {
+router.put("/detail/:id/edit", async (req, res) => {
     let book;
     let product;
 
     let user = typeof(req.user)  !== 'undefined' ? req.user : undefined
 
     try {
-        book = await Book.findById(req.params.id);
-        
-        product = await Product.findOne({detail : {_id : req.params.id}});
+        product = await Product.findById(req.params.id)
+
+        book = await Book.findById(product.detail);
 
 
         book.title = req.body.title;
@@ -273,6 +332,14 @@ router.delete("/detail/:id", async (req, res) => {
         res.send({ error: err.message });
     }
 });
+
+
+function parseImg(image, imageType) {
+    if (image != null && imageType != null) {
+        return `data:${imageType};charset=utf-8;base64,${image.toString("base64")}`;
+    }
+};
+
 
 // Function to find book
 async function getBook(req, res, next) {

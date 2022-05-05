@@ -16,20 +16,30 @@ router.get("/", async (req, res) => {
         .populate("review", "ratedScore")
         .populate({
             path: "detail",
-            populate: { path: "author genre language publisher", },
-            select: "-image -imageType",
+            populate: { path: "author genre language publisher"},
+            select: "-image -imageType"
         })
 
-        const booksIcon = await Book.find({})
-        .select("image imageType")
-        .lean({virtuals: true})
+
+        const productsIcon = await Product.find({})
+        .lean()
+        .populate("detail", "image imageType")
+
+        for (i = 0; i < products.length; i++) {
+            products[i].detail.icon = parseImg(productsIcon[i].detail.image, productsIcon[i].detail.imageType);
+
+            // delete product.detail.image;
+            // delete product.detail.imageType;
 
 
-        for (i = 0; i < booksIcon.length; i++) {
-            products[i].detail.icon = booksIcon[i].iconImgPath
             products[i].averageScore = 0
+
+        }
+
+
+        for (i = 0; i < products.length; i++) {
             if (products[i].review.length > 0) {
-                
+                    
                 products[i].review.forEach(review => {
                     if (review.ratedScore) {
                         products[i].averageScore += review.ratedScore
@@ -39,7 +49,6 @@ router.get("/", async (req, res) => {
             }
         }
 
-
         res.json(products)
 
 
@@ -48,19 +57,19 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/update", async (req, res) => {
-    try {
-        const books = await Book.find({});
-        books.forEach(async (book) => {
-            let product = await new Product();
-            product.detail = book.id;
-            await product.save();
-        });
-        res.redirect("/")
-    } catch (error) {
-        console.log(error);
-    }
-});
+// router.get("/update", async (req, res) => {
+//     try {
+//         const books = await Book.find({});
+//         books.forEach(async (book) => {
+//             let product = await new Product();
+//             product.detail = book.id;
+//             await product.save();
+//         });
+//         res.redirect("/")
+//     } catch (error) {
+//         console.log(error);
+//     }
+// });
 
 
 router.get("/product/:id", async(req, res) => {
@@ -81,13 +90,13 @@ router.get("/product/:id", async(req, res) => {
         })
 
 
-        const booksIcon = await Book.findById(product.detail._id)
-        .select("image imageType")
-        .lean({virtuals: true})
+        const productIcon = await Product.findById(req.params.id)
+        .lean()
+        .populate("detail", "image imageType")
 
 
 
-        product.detail.icon = booksIcon.iconImgPath
+        product.detail.icon = parseImg(productIcon.detail.image, productIcon.detail.imageType)
         product.averageScore = 0
         if (product.review.length > 0) {
             
@@ -96,7 +105,7 @@ router.get("/product/:id", async(req, res) => {
                     product.averageScore += review.ratedScore
                 }
             })
-            product.averageScore /= product.review.length
+            product.averageScore /= Number(parseFloat(product.averageScore / product.review.length).toFixed(1))
         }
 
 
@@ -239,5 +248,12 @@ function checkAuthenticated(req, res, next) {
     }
     next()
 }
+
+function parseImg(image, imageType) {
+    if (image != null && imageType != null) {
+        return `data:${imageType};charset=utf-8;base64,${image.toString("base64")}`;
+    }
+};
+
 
 module.exports = router;
