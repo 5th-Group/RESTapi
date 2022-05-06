@@ -153,7 +153,7 @@ router.post("/login", async (req, res, next) => {
                 if (error) return next(error);
 
                 // user.populate('country')
-
+                const userData = await User.findById(user._id).populate("country").select("-password")
 
                 const body = {
                     _id: user._id,
@@ -162,7 +162,7 @@ router.post("/login", async (req, res, next) => {
                 };
                 const token = jwt.sign({ user: body }, "TOP_SECRET");
 
-                res.status(200).send({token: token, userData: user});
+                res.status(200).send({token: token, userData: userData});
             });
         } catch (err) {
             return next({ errorMessage: err.message });
@@ -317,6 +317,7 @@ router.post('/review/:id/new', checkAuthenticated, async (req, res) => {
 
 
 function checkAuthenticated(req, res, next) {
+    console.log(JSON.stringify(req.headers))
     if (!req.user) {
         return res.status(401).send({errorMessage: "Not logged in."})
     }

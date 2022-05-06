@@ -14,7 +14,7 @@ passport.use(
         },
         async (username, password, done) => {
             try {
-                const user = await User.findOne({ username }).populate("country");
+                const user = await User.findOne({ username })
 
                 if (!user) {
                     return done(null, false, { message: "User not found!" });
