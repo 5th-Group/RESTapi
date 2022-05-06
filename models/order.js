@@ -1,23 +1,26 @@
 //Dependencies
 const mongoose = require('mongoose')
+const mongooseLeanGetters = require('mongoose-lean-getters')
 
 
 const orderSchema = new mongoose.Schema({
     products: [
         {
-            detail: {
+            productDetail: {
                 type: mongoose.Types.ObjectId,
                 required: true,
+                ref: 'products'
+            },
+            price: {
+                type: mongoose.Types.Decimal128,
+                required: true,
+                get: toFloat,
             },
             quantity: {
                 type: Number,
                 required: true,
-                default: 1
+                min: 1,
             },
-            total: {
-                type: mongoose.Types.Decimal128,
-                required: true,
-            }
         }
     ],
     createdAt: {
@@ -37,16 +40,20 @@ const orderSchema = new mongoose.Schema({
     totalPrice: {
         type: mongoose.Types.Decimal128,
         required: true,
+        get: toFloat,
     },
 })
 
-
-const detailSchema = new mongoose.Schema({
-
-})
-
-
-module.exports = {
-    Order: mongoose.model('orders', orderSchema),
-    OrderDetail: mongoose.model('orderDetails', detailSchema),
+function toFloat(value) {
+    if (typeof value != "undefined") {
+        return parseFloat(value.toString())
+    }
+    return value
 }
+
+orderSchema.set('toJSON', { getters: true})
+orderSchema.set('toObject', { getters: true})
+
+orderSchema.plugin(mongooseLeanGetters)
+
+module.exports = mongoose.model('orders', orderSchema)

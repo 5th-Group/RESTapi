@@ -2,13 +2,30 @@ GET http://localhost:3000/publishers
 
 ###
 
-GET http://localhost:3000/authors/6247df42ec6aa26370d0d94c
+PUT  http://localhost:3000/api/user/update
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTgxMjg2OH0.DSAtjbTVYRLgHa9UxHy09SpjRIhwfkmn67huC1P8GSQ
 
-
+{
+    "firstName": "minh13",
+    "address": [{"type": "Company", "location": "Ground"}]
+}
 
 ###
 
-GET http://localhost:3000/books/detail/6247e476debd45aac3c20ba6
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+
+{
+    "username": "wirexia",
+    "password": "123456"
+}
+
+###
+
+
+GET http://localhost:3000/api/order
 
 
 ###
@@ -16,10 +33,20 @@ GET http://localhost:3000/books/detail/6247e476debd45aac3c20ba6
 
 POST http://localhost:3000/api/order/create
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTgxMjg2OH0.DSAtjbTVYRLgHa9UxHy09SpjRIhwfkmn67huC1P8GSQ
 
 {
-    "id[0]": 1,
-    "name": "gun"
+    "products": [
+    {
+        "productDetail": "6273708d03dc9df56e0033dc",
+        "quantity": 1,
+        "price": 538.400
+    }, 
+    {
+        "productDetail": "6273708d03dc9df56e0033dd",
+        "quantity": 1,
+        "price": 502.200
+    }]
 }
 
 ###

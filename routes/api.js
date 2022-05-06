@@ -5,9 +5,9 @@ const router = express.Router();
 const Product = require("../models/product");
 const Review = require('../models/review');
 const User = require('../models/users');
-const { Order, OrderDetail } = require('../models/order')
+const Order = require("../models/order");
 const passport = require("passport");
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 require("../auth/auth");
 
 router.get("/", async (req, res) => {
@@ -186,28 +186,71 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
     }
 })
 
+router.get('/user/update', checkAuthenticated, async (req, res) => {
+    try {
+        res.send(req.user._id)
+    } catch (err) {
+        
+    }
+})
 
+router.put('/user/update', checkAuthenticated, async (req, res) => {
+    let user
+
+    let updateData = {};
+    let updateDataArray = {};
+
+    for (key in req.body) {
+        if (Array.isArray(req.body[key])) {
+            updateDataArray[key] = req.body[key];
+        } else {
+            updateData[key] = req.body[key];
+        }
+    }
+
+
+    // console.log(updateData)
+    // console.log(updateDataArray)
+    try {
+        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData, $push: updateDataArray})
+        
+        res.send({infoMessage: "Updated successfully"})
+
+    } catch (err) {
+        res.send({errorMessage: err})
+    }
+})
 
 // PUT user
-router.put('/user/:id/update', checkAuthenticated, async (req, res) => {
+router.put('/user/update-address', checkAuthenticated, async (req, res) => {
     let user
+
+    let updateData = req.body.address;
+
     try {
     
-        user = await User.findById(req.params.id)
-        user.username = req.body.username
-        user.password = req.body.password
-        user.firstName = req.body.firstName
-        user.lastName = req.body.lastName
-        user.gender = req.body.gender
-        user.address = req.body.address
-        user.email = req.body.email
-        user.role = req.body.role
-        user.country = req.body.country
-        user.phoneNumber = req.body.phoneNumber
+        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData})
 
-        await user.save();
-        res.status(204).send({infoMessage: "Successful Update."})
+        res.send({infoMessage: "Successful Update."})
 
+    } catch (err) {
+        res.send({errorMessage: err})
+    }
+})
+
+// GET 
+router.get('/order', async (req, res) => {
+    try {
+        const orders = await Order.find({})
+        .populate({
+            path: "products.productDetail",
+            populate: {path: "detail", select: "title"},
+            select: "detail",
+        })
+        .lean({getters: true})
+
+        
+        res.send(orders)
     } catch (err) {
         res.send(err)
     }
@@ -215,19 +258,30 @@ router.put('/user/:id/update', checkAuthenticated, async (req, res) => {
 
 
 // POST Order
-router.post('/order/create', async (req, res) => {
+router.post('/order/create', checkAuthenticated, async (req, res) => {
 
-    
-    res.send(req.body)
-    // const order = await new Order({
+    const totalPrice = (listProducts) => {
+        let sum = 0;
+        listProducts.forEach(product => {
+            sum = sum + (product.price * product.quantity) 
+        })
 
-    // })
+        return sum
+    }
 
-    // try {
+    const order = await new Order({
+        products: req.body.products,
+        customer: req.user._id,
+        totalPrice: totalPrice(req.body.products)
+    });
 
-    // } catch (err) {
-    //     res.send(err)
-    // }
+    try {
+        await order.save()
+        
+        res.send({infoMessage: "Order has been created successfully."})
+    } catch (err) {
+        res.send({errorMessage: err})
+    }
 })
 
 
