@@ -268,9 +268,11 @@ router.post('/order/create', checkAuthenticated, async (req, res) => {
 
     let totalPrice = (listProducts) => {
         let sum = 0;
-        listProducts.forEach(product => {
-            sum = sum + (product.price * product.quantity) 
-        })
+        if (typeof(listProducts) !== 'undefined'){
+            listProducts.forEach(product => {
+                sum = sum + (product.price * product.quantity) 
+            })
+        }
 
         return sum
     }
