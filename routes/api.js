@@ -266,7 +266,7 @@ router.get('/order', async (req, res) => {
 // POST Order
 router.post('/order/create', checkAuthenticated, async (req, res) => {
 
-    const totalPrice = (listProducts) => {
+    let totalPrice = (listProducts) => {
         let sum = 0;
         listProducts.forEach(product => {
             sum = sum + (product.price * product.quantity) 
