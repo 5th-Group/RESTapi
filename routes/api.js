@@ -245,18 +245,20 @@ router.put('/user/update-address', checkAuthenticated, async (req, res) => {
 })
 
 // GET 
-router.get('/order', async (req, res) => {
+router.get('/user/orders', checkAuthenticated, async (req, res) => {
     try {
-        const orders = await Order.find({})
+        const orders = await Order.find({customer: req.user._id})
         .populate({
             path: "products.productDetail",
             populate: {path: "detail", select: "title"},
             select: "detail",
         })
+        .select("-customer")
         .lean({getters: true})
 
 
-        res.send(orders)
+        res.status(200).send(orders)
+
     } catch (err) {
         res.send(err)
     }
@@ -268,7 +270,7 @@ router.post('/order/create', checkAuthenticated, async (req, res) => {
 
     let totalPrice = (listProducts) => {
         let sum = 0;
-        if (typeof(listProducts) !== 'undefined'){
+        if (typeof(listProducts) !== 'undefined' && listProducts.length > 0){
             listProducts.forEach(product => {
                 sum = sum + (product.price * product.quantity) 
             })
