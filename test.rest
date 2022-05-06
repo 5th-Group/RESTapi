@@ -2,13 +2,12 @@ GET http://localhost:3000/publishers
 
 ###
 
-PUT  http://localhost:3000/api/user/update
+PUT  http://localhost:3000/api/user/update-address
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTgxMjg2OH0.DSAtjbTVYRLgHa9UxHy09SpjRIhwfkmn67huC1P8GSQ
 
 {
-    "firstName": "minh13",
-    "address": [{"type": "Company", "location": "Ground"}]
+    "address": [{"type": "Enterprise", "location": "Ground"}]
 }
 
 ###

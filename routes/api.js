@@ -152,6 +152,8 @@ router.post("/login", async (req, res, next) => {
             req.login(user, { session: false }, async (error) => {
                 if (error) return next(error);
 
+                // user.populate('country')
+
 
                 const body = {
                     _id: user._id,
@@ -186,13 +188,13 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
     }
 })
 
-router.get('/user/update', checkAuthenticated, async (req, res) => {
-    try {
-        res.send(req.user._id)
-    } catch (err) {
+// router.get('/user/update', checkAuthenticated, async (req, res) => {
+//     try {
+//         res.send(req.user._id)
+//     } catch (err) {
         
-    }
-})
+//     }
+// })
 
 router.put('/user/update', checkAuthenticated, async (req, res) => {
     let user
@@ -208,9 +210,6 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
         }
     }
 
-
-    // console.log(updateData)
-    // console.log(updateDataArray)
     try {
         user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData, $push: updateDataArray})
         
@@ -225,13 +224,17 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
 router.put('/user/update-address', checkAuthenticated, async (req, res) => {
     let user
 
-    let updateData = req.body.address;
+    let updateData = {};
+
+    if(req.body.address.length > 0) {
+        updateData.address = req.body.address
+    }
 
     try {
     
         user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData})
 
-        res.send({infoMessage: "Successful Update."})
+        res.send({infoMessage: "Successful Update.", newData: user})
 
     } catch (err) {
         res.send({errorMessage: err})
@@ -249,7 +252,7 @@ router.get('/order', async (req, res) => {
         })
         .lean({getters: true})
 
-        
+
         res.send(orders)
     } catch (err) {
         res.send(err)
