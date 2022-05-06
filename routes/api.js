@@ -196,8 +196,7 @@ router.get('/review/:id/new', checkAuthenticated, async (req, res) => {
 //     }
 // })
 
-router.put('/user/update', checkAuthenticated, async (req, res) => {
-    let user
+router.patch('/user/update', checkAuthenticated, async (req, res) => {
 
     let updateData = {};
     let updateDataArray = {};
@@ -211,10 +210,11 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
     }
 
     try {
-        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData, $push: updateDataArray})
+        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData, $push: updateDataArray}, {returnOriginal: false})
         .populate("country")
+        .clone()
         
-        res.send({infoMessage: "Updated successfully", newData: user})
+        res.send({infoMessage: "Successful Update.", newData: user})
 
     } catch (err) {
         res.send({errorMessage: err})
@@ -233,7 +233,8 @@ router.put('/user/update-address', checkAuthenticated, async (req, res) => {
 
     try {
     
-        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData})
+        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData}, {returnOriginal: false})
+        .clone()
         .populate("country")
 
         res.send({infoMessage: "Successful Update.", newData: user})
@@ -319,7 +320,7 @@ router.post('/review/:id/new', checkAuthenticated, async (req, res) => {
 
 
 function checkAuthenticated(req, res, next) {
-    console.log(JSON.stringify(req.headers))
+    // console.log(JSON.stringify(req.headers))
     if (!req.user) {
         return res.status(401).send({errorMessage: "Not logged in."})
     }
