@@ -329,10 +329,10 @@ router.post('/review/:id/new', checkAuthenticated, async (req, res) => {
 
 
 function checkAuthenticated(req, res, next) {
+    console.log(JSON.stringify(req.headers))
     if (!req.user) {
         return res.status(401).send({errorMessage: "Not logged in."})
     }
-    console.log(JSON.stringify(req.headers))
     next()
 }
 
