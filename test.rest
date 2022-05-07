@@ -4,10 +4,15 @@ GET http://localhost:3000/publishers
 
 PUT   http://localhost:3000/api/user/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTg0MDM3MH0.3TSf1mwsZLo5QTtC6tNz_B_TeLy7KozbCYo52bTP0jk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTg5MzY4M30.pHsP1YNaxzC9Z2XjmOFi_Df2DLunKcvXl1NJRRCGF08
 
 {
-    "lastName": "Minh"
+    "address": [
+        {
+            "type": "Home",
+            "location": "123, ấp, xã , Tp"
+        },
+    ]
 }
 
 ###
@@ -24,7 +29,8 @@ Content-Type: application/json
 ###
 
 
-GET http://localhost:3000/api/order
+GET http://localhost:3000/api/user/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYyNjU2YTM2NjQ3NmMxNzMyMjgyN2RiZCIsInVzZXJuYW1lIjoid2lyZXhpYSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTY1MTgxMjg2OH0.DSAtjbTVYRLgHa9UxHy09SpjRIhwfkmn67huC1P8GSQ
 
 
 ###
