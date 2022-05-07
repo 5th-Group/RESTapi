@@ -97,13 +97,12 @@ router.get("/product/:id", async(req, res) => {
         product.detail.icon = parseImg(productIcon.detail.image, productIcon.detail.imageType)
         product.averageScore = 0
         if (product.review.length > 0) {
-            
             product.review.forEach(review => {
                 if (review.ratedScore) {
                     product.averageScore += review.ratedScore
                 }
             })
-            product.averageScore /= Number(parseFloat(product.averageScore / product.review.length).toFixed(1))
+            product.averageScore = Number(parseFloat(product.averageScore / product.review.length).toFixed(1))
         }
 
 
