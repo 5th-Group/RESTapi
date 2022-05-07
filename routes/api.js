@@ -11,20 +11,29 @@ const jwt = require('jsonwebtoken');
 require("../auth/auth");
 
 router.get("/", async (req, res) => {
+
+    let searchDetail = {};
+    if (req.query.title != null && req.query.title != "") {
+        searchDetail.title = new RegExp(req.query.title, "i");
+        // searchDetail.title = req.query.title
+    }
+
     try {
+        // console.log(searchDetail.title)
         const products = await Product.find({})
         .lean({getters: true})
-        .populate("review", "ratedScore")
         .populate({
             path: "detail",
             populate: { path: "author genre language publisher", select: "-languageCode -dateOfBirth -biography -code -contact"},
-            select: "-image -imageType"
+            select: "-image -imageType",
         })
+        .populate("review", "ratedScore")
 
 
         const productsIcon = await Product.find({})
         .lean()
         .populate("detail", "image imageType")
+
 
         for (i = 0; i < products.length; i++) {
             products[i].detail.icon = parseImg(productsIcon[i].detail.image, productsIcon[i].detail.imageType);
@@ -47,7 +56,10 @@ router.get("/", async (req, res) => {
             }
         }
 
-        res.json(products)
+        
+        const data = products.filter((product) => product.detail.title.match(searchDetail.title))
+
+        res.json(data)
 
 
     } catch (err) {
@@ -116,7 +128,13 @@ router.get("/product/:id", async(req, res) => {
 
 // POST register
 router.post("/register", async (req, res) => {
-    const hashedPassword = await brcypt.hash(req.body.password, 10);
+
+    if (typeof(req.body.password) !== 'undefined' && req.body.password != null) {
+        const hashedPassword = await brcypt.hash(req.body.password, 10);
+    } else {
+        return new Error('Empty password')
+    }
+
 
     const user = new User({
         username: req.body.username,
@@ -209,7 +227,7 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
     }
 
     try {
-        
+
         user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData, $push: updateDataArray}, {returnOriginal: false})
         .populate("country")
         .clone()
@@ -226,22 +244,22 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
 // PUT user
 router.put('/user/update-address', checkAuthenticated, async (req, res) => {
 
-
     let updateData = {};
 
 
-
-
     try {
-        let data = await req.body.address
+        let data = await req.body
 
-        if(typeof(data) !== 'undefined' && data.length > 0) {
-            updateData.address = await data
+
+        if(typeof(data) !== 'undefined') {
+            updateData.address = await data.address
+            updateData.id = await data.pos
         } else {
             new Error('Empty address.')
         }
+
     
-        user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData}, {returnOriginal: false})
+        user = await User.findOneAndUpdate({"_id": req.user._id, "address._id": updateData.id}, {$set: {"address.$.type": updateData.address.type, "address.$.location": updateData.address.location}}, {returnOriginal: false})
         .clone()
         .populate("country")
 
