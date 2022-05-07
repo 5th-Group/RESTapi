@@ -138,17 +138,23 @@ router.post("/register", async (req, res) => {
     }
 
 
+    const address = [{
+        location: req.body.location,
+        type: req.body.type,
+    }]
+
     const user = new User({
         username: req.body.username,
         password: hashedPassword,
         firstName: req.body.fname,
         lastName: req.body.lname,
         gender: req.body.gender,
-        address: req.body.address,
+        address: address,
         email: req.body.email,
         country: req.body.country,
         phoneNumber: req.body.phonenum,
     });
+    
     try {
         await user.save();
         res.status(201).send({

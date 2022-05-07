@@ -79,6 +79,10 @@ router.post("/login", async (req, res, next) => {
 // POST Register
 router.post("/register", async (req, res) => {
     const hashedPassword = await brcypt.hash(req.body.password, 10);
+    const address = [{
+        location: req.body.location,
+        type: req.body.type,
+    }]
 
     const user = new User({
         username: req.body.username,
@@ -86,7 +90,7 @@ router.post("/register", async (req, res) => {
         firstName: req.body.fname,
         lastName: req.body.lname,
         gender: req.body.gender,
-        address: req.body.address,
+        address: address,
         email: req.body.email,
         country: req.body.country,
         phoneNumber: req.body.phonenum,
@@ -100,6 +104,7 @@ router.post("/register", async (req, res) => {
         res.render("authentication/register", {
             countries: countries,
             errorMessage: err.message,
+            user: req.body
         });
     }
 });

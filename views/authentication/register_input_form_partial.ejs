@@ -23,7 +23,14 @@
 </div>
 <div>
     <label>Address</label>
-    <input type="text" name="address" />
+    <input type="text" name="location" />
+</div>
+<div>
+    <label>It is your: </label>
+    <select name="type">
+        <option selected label="Home" value="Home"></option>
+        <option label="Company" value="Company"></option>
+    </select>
 </div>
 <div>
     <label>Email</label>
@@ -32,15 +39,13 @@
 <div>
     <label>Country</label>
     <select name="country">
-        <% countries.forEach( country => { %> <% if (country._id ===
-        user.country) { %>
-        <option selected label="<%= country.name %>" value="<%= country._id %>">
+        <% countries.forEach( country => { %> 
+            <% if (country._id === user.country) { %>
+                <option selected label="<%= country.name %>" value="<%= country._id %>"></option>
             <% } else { %>
-        </option>
-
-        <option label="<%= country.name %>" value="<%= country._id %>">
-            <% } %> <% }) %>
-        </option>
+                <option label="<%= country.name %>" value="<%= country._id %>"></option>
+            <% } %> 
+        <% }) %>
     </select>
 </div>
 <div>
