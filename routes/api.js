@@ -129,10 +129,12 @@ router.get("/product/:id", async(req, res) => {
 // POST register
 router.post("/register", async (req, res) => {
 
+    let hashedPassword;
+
     if (typeof(req.body.password) !== 'undefined' && req.body.password != null) {
-        const hashedPassword = await brcypt.hash(req.body.password, 10);
+        hashedPassword = await brcypt.hash(req.body.password, 10);
     } else {
-        return new Error('Empty password')
+        new Error('Empty password')
     }
 
 
