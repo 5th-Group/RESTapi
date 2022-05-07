@@ -222,7 +222,7 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
 
 // PUT user
 router.put('/user/update-address', checkAuthenticated, async (req, res) => {
-    let data = req.body.address
+    let data = await req.body.address
 
     let updateData = {};
 
