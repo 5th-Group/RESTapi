@@ -222,12 +222,13 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
 
 // PUT user
 router.put('/user/update-address', checkAuthenticated, async (req, res) => {
-    let user
+    let data = req.body.address
 
     let updateData = {};
 
-    if(req.body.address.length > 0) {
-        updateData.address = req.body.address
+
+    if(typeof(data) !== 'undefined' && data.length > 0) {
+        updateData.address = data
     }
 
     try {
