@@ -68,6 +68,7 @@ router.get("/", async (req, res) => {
 //GET new
 router.get("/new", async (req, res) => {
     let user;
+    let date;
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
@@ -77,6 +78,8 @@ router.get("/new", async (req, res) => {
         const book = await new Book();
         const product = await new Product();
 
+
+
         if(typeof req.user !== 'undefined') {
             user = req.user
         }
@@ -85,6 +88,7 @@ router.get("/new", async (req, res) => {
 
         res.render("books/new", {
             book: book,
+            date: date,
             authors: authors,
             languages: languages,
             publishers: publishers,
@@ -238,8 +242,11 @@ router.post("/new", async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
 
+        const date = req.body.publishDate
+
         res.render("books/new", {
             book: book,
+            date: date,
             product: product,
             authors: authors,
             languages: languages,

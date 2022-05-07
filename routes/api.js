@@ -8,6 +8,7 @@ const User = require('../models/users');
 const Order = require("../models/order");
 const passport = require("passport");
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 require("../auth/auth");
 
 router.get("/", async (req, res) => {
@@ -132,7 +133,7 @@ router.post("/register", async (req, res) => {
     let hashedPassword;
 
     if (typeof(req.body.password) !== 'undefined' && req.body.password != null) {
-        hashedPassword = await brcypt.hash(req.body.password, 10);
+        hashedPassword = await bcrypt.hash(req.body.password, 10);
     } else {
         new Error('Empty password')
     }
@@ -154,7 +155,7 @@ router.post("/register", async (req, res) => {
         country: req.body.country,
         phoneNumber: req.body.phonenum,
     });
-    
+
     try {
         await user.save();
         res.status(201).send({
