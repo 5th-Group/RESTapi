@@ -228,7 +228,7 @@ router.put('/user/update-address', checkAuthenticated, async (req, res) => {
 
 
     if(typeof(data) !== 'undefined' && data.length > 0) {
-        updateData.address = data
+        updateData.address = await data
     }
 
     try {
