@@ -222,16 +222,21 @@ router.put('/user/update', checkAuthenticated, async (req, res) => {
 
 // PUT user
 router.put('/user/update-address', checkAuthenticated, async (req, res) => {
-    let data = await req.body.address
+
 
     let updateData = {};
 
 
-    if(typeof(data) !== 'undefined' && data.length > 0) {
-        updateData.address = await data
-    }
+
 
     try {
+        let data = await req.body.address
+
+        if(typeof(data) !== 'undefined' && data.length > 0) {
+            updateData.address = await data
+        } else {
+            new Error('Empty address.')
+        }
     
         user = await User.findOneAndUpdate({_id: req.user._id}, {$set: updateData}, {returnOriginal: false})
         .clone()
