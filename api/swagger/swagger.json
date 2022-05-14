@@ -1,0 +1,1466 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "version": "1.0",
+      "title": "Books Web API",
+      "description": "Student Assignment API"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Author",
+        "description": "Interact with author's database"
+      },
+      {
+        "name": "Country",
+        "description": "Operations about country"
+      },
+      {
+        "name": "Cover",
+        "description": "Operations about book covers"
+      },
+      {
+        "name": "Genre",
+        "description": "Access all book genres"
+      },
+      {
+        "name": "Language",
+        "description": ""
+      },
+      {
+        "name": "Order",
+        "description": ""
+      },
+      {
+        "name": "Product",
+        "description": "Operations about product"
+      },
+      {
+        "name": "Publisher",
+        "description": ""
+      },
+      {
+        "name": "Review",
+        "description": ""
+      },
+      {
+        "name": "User",
+        "description": ""
+      }
+    ],
+    "paths": {
+      "/books": {
+        "get": {
+          "tags": [
+            "Product"
+          ],
+          "description": "Get all products in database, consisting of title, cost, price, average review score and image data.",
+          "summary": "Get all products",
+          "operationId": "getProducts",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "title",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Search by book's title"
+            },
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get products successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/books/detail/{productId}": {
+        "get": {
+          "tags": [
+            "Product"
+          ],
+          "description": "Get detailed info of a product by Id.",
+          "summary": "Get a product",
+          "operationId": "getProductById",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "productId",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "auto-generated ID of a product"
+            },
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get product successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Product"
+          ],
+          "description": "Delete a specific product while keeping book data in database.",
+          "summary": "Delete a product",
+          "operationId": "deleteProduct",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "productId",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "auto-generated ID of a product"
+            },
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful delete"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/books/new": {
+        "post": {
+          "tags": [
+            "Product"
+          ],
+          "description": "Add new product into the database",
+          "summary": "Add new product",
+          "operationId": "postProduct",
+          "requestBody": {
+            "description": "Input for new book",
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/newBook"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "405": {
+              "description": "invalid"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/covers": {
+        "get": {
+          "tags": [
+            "Cover"
+          ],
+          "description": "Get list of all available cover for book from database.",
+          "summary": "Get all book covers",
+          "operationId": "getBookCovers",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get all book covers successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BookCover"
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/covers/new": {
+        "post": {
+          "tags": [
+            "Cover"
+          ],
+          "description": "Add new cover type for book to the database.",
+          "summary": "Add new cover type",
+          "operationId": "postBookCovers",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/newCover"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "400": {
+              "description": "Bad input"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/genres": {
+        "get": {
+          "tags": [
+            "Genre"
+          ],
+          "description": "Get list of all available book genres.",
+          "summary": "Get book genres",
+          "operationId": "getBookGenres",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get book genres successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/BookGenre"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/genres/new": {
+        "post": {
+          "tags": [
+            "Genre"
+          ],
+          "description": "Add new genre to database.",
+          "summary": "Add new book genre",
+          "operationId": "postBookGenres",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/newGenre"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "400": {
+              "description": "Bad input"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/countries": {
+        "get": {
+          "tags": [
+            "Country"
+          ],
+          "description": "Get list of all available countries in database.",
+          "summary": "Get all countries",
+          "operationId": "getCountries",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get countries successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Country"
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/countries/new": {
+        "post": {
+          "tags": [
+            "Country"
+          ],
+          "description": "Add new country to the database.",
+          "summary": "Add new country",
+          "operationId": "postCountry",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Country"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "400": {
+              "$ref": "components/responses/400"
+            },
+            "500": {
+              "$ref": "components/responses/500"
+            }
+          }
+        }
+      },
+      "/authors": {
+        "get": {
+          "tags": [
+            "Author"
+          ],
+          "description": "Get list of all authors from database.",
+          "summary": "Get authors",
+          "operationId": "getAuthors",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get all authors successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/authors/{authorId}": {
+        "get": {
+          "tags": [
+            "Author"
+          ],
+          "description": "Get info a specific author by ID.",
+          "summary": "Get author",
+          "operationId": "getAuthor",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "authorId",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Auto-generated ID of an author."
+            },
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get author successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Author"
+          ],
+          "description": "Delete an existing author from database.",
+          "summary": "Delete an author",
+          "operationId": "deleteAuthor",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "authorId",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Auto-generated ID of an author."
+            }
+          ],
+          "responses": {
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/authors/new": {
+        "post": {
+          "tags": [
+            "Author"
+          ],
+          "description": "Add new author into database.",
+          "summary": "Add new author",
+          "operationId": "postAuthor",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/authors/{authorId}/edit": {
+        "put": {
+          "tags": [
+            "Author"
+          ],
+          "description": "Edit data of existing author by Id.",
+          "summary": "Edit data",
+          "operationId": "putAuthor",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "authorId",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "Auto-generated ID of an author."
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "responses": {
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/publishers": {
+        "get": {
+          "tags": [
+            "Publisher"
+          ],
+          "description": "Get list of all publishers from database.",
+          "summary": "Get all publishers",
+          "operationId": "getPublishers",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get publishers successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Publisher"
+                  }
+                }
+              }
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/publishers/{publisherId}": {
+        "get": {
+          "tags": [
+            "Publisher"
+          ],
+          "description": "Get info of an existing publisher by Id.",
+          "summary": "Get publisher's info by Id",
+          "operationId": "getPublisherById",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "publisherId",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "Auto-generated ID of a publisher."
+            },
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get publisher successfully."
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/publishers/new": {
+        "post": {
+          "tags": [
+            "Publisher"
+          ],
+          "description": "Add new publisher into database.",
+          "summary": "Add new publisher",
+          "operationId": "postPublisher",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/newPublisher"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            }
+          }
+        }
+      },
+      "/orders/create": {
+        "post": {
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "tags": [
+            "Order"
+          ],
+          "description": "Add new order data into database.",
+          "summary": "Add new order",
+          "operationId": "postOrder",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/newOrder"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "401": {
+              "$ref": "#/components/responses/Unauthorized"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/register": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "description": "Create a new account.",
+          "summary": "Create account",
+          "operationId": "postRegister",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/newRegister"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "description": "Log in an account.",
+          "summary": "Login",
+          "operationId": "postLogin",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/books/detail/{productId}/new-review": {
+        "post": {
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "tags": [
+            "Review"
+          ],
+          "description": "Add new review to database.",
+          "summary": "Add new review",
+          "operationId": "postReview",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "productId",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "Auto-generated ID of a product."
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "review": {
+                      "type": "string"
+                    },
+                    "ratedScore": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/languages": {
+        "get": {
+          "tags": [
+            "Language"
+          ],
+          "description": "Get list of all supported language from database.",
+          "summary": "Get languages",
+          "operationId": "getLanguages",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/jsonParam"
+            },
+            {
+              "in": "query",
+              "name": "name",
+              "schema": {
+                "type": "string"
+              },
+              "required": false,
+              "description": "Optional. Get a list of languages containing the name."
+            }
+          ],
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/languages/{languageId}": {
+        "get": {
+          "tags": [
+            "Language"
+          ],
+          "description": "Get info of a language.",
+          "summary": "View info of a language",
+          "operationId": "getLanguage",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "languageId",
+              "schema": {
+                "type": "string"
+              },
+              "required": true,
+              "description": "Auto-generated ID of a language."
+            }
+          ],
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      },
+      "/languages/new": {
+        "post": {
+          "tags": [
+            "Language"
+          ],
+          "description": "Add new language to database.",
+          "summary": "Add new language",
+          "operationId": "postLanguage",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "$ref": "#/components/responses/201"
+            },
+            "401": {
+              "$ref": "#/components/responses/Unauthorized"
+            },
+            "405": {
+              "$ref": "#/components/responses/405"
+            },
+            "500": {
+              "$ref": "#/components/responses/500"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "newBook": {
+          "type": "object",
+          "properties": {
+            "cost": {
+              "type": "number",
+              "format": "double",
+              "default": 0
+            },
+            "price": {
+              "type": "number",
+              "format": "double",
+              "default": 0
+            },
+            "title": {
+              "type": "string"
+            },
+            "genre": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "author": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "coverType": {
+              "type": "string"
+            },
+            "pageCount": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "language": {
+              "type": "string"
+            },
+            "publisher": {
+              "type": "string"
+            },
+            "publishDate": {
+              "type": "string"
+            },
+            "isbn10": {
+              "type": "string"
+            },
+            "isbn13": {
+              "type": "string"
+            },
+            "img": {
+              "type": "string",
+              "format": "base64"
+            }
+          },
+          "required": [
+            "title",
+            "genre",
+            "author",
+            "coverType",
+            "pageCount",
+            "language",
+            "publisher",
+            "publishDate",
+            "img"
+          ]
+        },
+        "newGenre": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "newCover": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "newOrder": {
+          "type": "object",
+          "properties": {
+            "products": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productDetail": {
+                    "type": "string",
+                    "description": "Auto-generated ID of product."
+                  },
+                  "price": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "minimum": 1
+                  }
+                }
+              },
+              "description": "Auto-generated ID of product."
+            }
+          }
+        },
+        "newPublisher": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "phoneNumber": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "twitter": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "facebook": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            },
+            "origin": {
+              "type": "string",
+              "description": "Auto-generated ID of country"
+            }
+          }
+        },
+        "newRegister": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string",
+              "format": "password"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "address": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "country": {
+              "type": "string",
+              "description": "Auto-generated ID of country."
+            },
+            "phoneNumber": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "username",
+            "password",
+            "firstName",
+            "lastName",
+            "gender",
+            "email",
+            "country",
+            "phoneNumber"
+          ]
+        },
+        "Author": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "origin": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "biography": {
+              "type": "string"
+            }
+          }
+        },
+        "Book": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "pageCount": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "author": {
+              "$ref": "#/components/schemas/Author"
+            },
+            "language": {
+              "$ref": "#/components/schemas/Language"
+            },
+            "genre": {
+              "$ref": "#/components/schemas/BookGenre"
+            },
+            "coverType": {
+              "$ref": "#/components/schemas/BookCover"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "image": {
+              "type": "string",
+              "format": "binary"
+            },
+            "imageType": {
+              "type": "string"
+            },
+            "publishDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "publisher": {
+              "$ref": "#/components/schemas/Publisher"
+            },
+            "isbn": {
+              "type": "object",
+              "properties": {
+                "isbn10": {
+                  "type": "string"
+                },
+                "isbn13": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "BookCover": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "BookGenre": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "Publisher": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "phoneNumber": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "twitter": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "facebook": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            },
+            "origin": {
+              "$ref": "#/components/schemas/Country"
+            }
+          },
+          "required": [
+            "name",
+            "contact",
+            "origin"
+          ]
+        },
+        "Country": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            }
+          }
+        },
+        "Language": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string",
+              "format": "password"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string"
+            },
+            "address": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "role": {
+              "type": "string"
+            },
+            "country": {
+              "$ref": "#/components/schemas/Country"
+            },
+            "phoneNumber": {
+              "type": "string"
+            }
+          }
+        },
+        "Review": {
+          "type": "object",
+          "properties": {
+            "product": {
+              "$ref": "#/components/schemas/Product"
+            },
+            "review": {
+              "type": "string"
+            },
+            "reviewer": {
+              "$ref": "#/components/schemas/User"
+            },
+            "ratedScore": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "Product": {
+          "type": "object",
+          "properties": {
+            "detail": {
+              "$ref": "#/components/schemas/Book"
+            },
+            "cost": {
+              "type": "number",
+              "format": "double"
+            },
+            "price": {
+              "type": "number",
+              "format": "double"
+            },
+            "review": {
+              "$ref": "#/components/schemas/Review"
+            }
+          }
+        },
+        "Order": {
+          "type": "object",
+          "properties": {
+            "products": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productDetail": {
+                    "$ref": "#/components/schemas/Product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "type": "string",
+              "default": "Received"
+            },
+            "customer": {
+              "$ref": "#/components/schemas/Language"
+            },
+            "totalPrice": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        }
+      },
+      "parameters": {
+        "jsonParam": {
+          "in": "query",
+          "name": "json",
+          "schema": {
+            "type": "boolean"
+          },
+          "required": true,
+          "description": "If true, return list in json format, otherwise render html page."
+        }
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Request succeeded."
+        },
+        "201": {
+          "description": "Resource created successfully."
+        },
+        "400": {
+          "description": "Bad input"
+        },
+        "404": {
+          "description": "Specific resource not found."
+        },
+        "405": {
+          "description": "Method not allowed."
+        },
+        "500": {
+          "description": "Internal server error"
+        },
+        "Unauthorized": {
+          "description": "Unauthorized! Token not exist or invalid."
+        }
+      }
+    }
+  }

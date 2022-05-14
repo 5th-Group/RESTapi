@@ -19,6 +19,7 @@ const reviewSchema = new mongoose.Schema({
     ratedScore: {
         type: Number,
         required: true,
+        min: 0
     },
 });
 

@@ -6,19 +6,27 @@ const Country = require("../models/countries");
 
 // GET all
 router.get("/", async (req, res) => {
+    const user = req.user != null ? req.user : undefined
+
     let searchDetail;
     if (req.query.name != null && req.query.name != "") {
         searchDetail.name = new RegExp(req.query.name, "i");
     }
     try {
         const publishers = await Publisher.find(searchDetail);
-        res.render("publishers/index", {
-            publishers: publishers,
-            searchDetail: req.query,
-            isAuthenticated: req.isAuthenticated(),
-        });
+
+        if (req.query.json) {
+            res.status(200).send(publishers)
+        } else {
+            res.render("publishers/index", {
+                publishers: publishers,
+                searchDetail: req.query,
+                isAuthenticated: req.isAuthenticated(),
+            });
+        }
+
     } catch (err) {
-        res.render("publishers/index", { errorMessage: err.message });
+        res.redirect("/", { errorMessage: err.message });
     }
 });
 

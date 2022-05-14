@@ -14,26 +14,24 @@ router.get("/", (req, res) => {
 });
 
 // GET login page
-router.get("/login", authenticatedOrGuest, function (req, res) {
-    if (!req.user) {
-        res.render("authentication/login", {
-            isAuthenticated: req.isAuthenticated(),
-        });
-    } else {
-        res.redirect("/");
-    }
+router.get("/login", authenticatedOrGuest, checkNotAuthenticated, function (req, res) {
+    res.render("authentication/login");
 });
 
 // GET register page
-router.get("/register", async (req, res) => {
+router.get("/register", authenticatedOrGuest, checkNotAuthenticated ,async (req, res) => {
 
-    const countries = await Country.find({});
-    const user = await new User();
-    res.render("authentication/register", {
-        user: user,
-        countries: countries,
-        isAuthenticated: req.isAuthenticated(),
-    });
+    try {
+        const countries = await Country.find({});
+        const registerUser = await new User();
+    
+        res.render("authentication/register", {
+            registerUser: registerUser,
+            countries: countries,
+        });
+    } catch (err) {
+        res.send(err)
+    }
 });
 
 // GET logout page
@@ -79,12 +77,13 @@ router.post("/login", async (req, res, next) => {
 // POST Register
 router.post("/register", async (req, res) => {
     const hashedPassword = await brcypt.hash(req.body.password, 10);
+
     const address = [{
         location: req.body.location,
         type: req.body.type,
     }]
 
-    const user = new User({
+    const registerUser = new User({
         username: req.body.username,
         password: hashedPassword,
         firstName: req.body.fname,
@@ -95,18 +94,38 @@ router.post("/register", async (req, res) => {
         country: req.body.country,
         phoneNumber: req.body.phonenum,
     });
+
     try {
         await user.save();
         res.redirect("/");
+
     } catch (err) {
         const countries = await Country.find({});
 
         res.render("authentication/register", {
             countries: countries,
             errorMessage: err.message,
-            user: req.body
+            registerUser: registerUser,
+            user: user,
         });
     }
 });
+
+
+async function checkAuthenticated(req, res, next) {
+    if (!req.user) {
+        return res.redirect("/")
+    }
+
+    next()
+}
+
+async function checkNotAuthenticated(req, res, next) {
+    if (req.user) {
+        return res.redirect("/")
+    }
+
+    next()
+}
 
 module.exports = router;

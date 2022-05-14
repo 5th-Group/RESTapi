@@ -8,24 +8,25 @@ const Author = require("../models/authors");
 const Publisher = require("../models/publisher");
 const BookGenre = require("../models/bookGenre");
 const Product = require("../models/product");
+const Review = require("../models/review")
 const imageMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg"];
-// const authenticatedOrGuest = require("../auth/authenticatedOrGuest");
+const multer = require('multer')
+const upload = multer()
+const ObjectId = require("mongoose").Types.ObjectId
 
 
 // Get All
 router.get("/", async (req, res) => {
-    let user;
+    const user = req.user != null ? req.user : undefined
 
-    if (req.user != null) {
-        user = req.user
-    }
 
     let searchDetail = {};
+
     if (req.query.title != null && req.query.title != "") {
         searchDetail.title = new RegExp(req.query.title, "i");
     }
+
     try {
-        // const books = await Book.find(searchDetail).lean({virtuals: true})
         const products = await Product.find({})
         .lean({getters: true,})
         .populate("review", "ratedScore")
@@ -33,8 +34,7 @@ router.get("/", async (req, res) => {
             path: "detail",
             populate: { path: "author genre language publisher" },
         })
-
-
+        
 
         for (i = 0; i < products.length; i++) {
             products[i].detail.icon = parseImg(products[i].detail.image, products[i].detail.imageType)
@@ -50,15 +50,17 @@ router.get("/", async (req, res) => {
             }
         }
         
+        const data = products.filter((product) => product.detail.title.match(searchDetail.title))
 
-
-
-        res.render("books/index", {
-            // books: books,
-            products: products,
-            searchDetail: req.query,
-            user: user,
-        });
+        if (req.query.json) {
+            res.status(200).send(data)
+        } else {
+            res.render("books/index", {
+                products: data,
+                searchDetail: req.query,
+                user: user,
+            });
+        }
     } catch (err) {
         res.send(err);
     }
@@ -67,8 +69,10 @@ router.get("/", async (req, res) => {
 
 //GET new
 router.get("/new", async (req, res) => {
-    let user;
+    const user = req.user != null ? req.user : undefined
+
     let date;
+
     try {
         const authors = await Author.find({});
         const languages = await Language.find({});
@@ -76,15 +80,7 @@ router.get("/new", async (req, res) => {
         const bookCovers = await BookCover.find({});
         const bookGenres = await BookGenre.find({});
         const book = await new Book();
-        const product = await new Product();
-
-
-
-        if(typeof req.user !== 'undefined') {
-            user = req.user
-        }
-
-        
+        const product = await new Product();       
 
         res.render("books/new", {
             book: book,
@@ -98,7 +94,7 @@ router.get("/new", async (req, res) => {
             user: user,
         });
     } catch (err) {
-        res.send({ message: err.message });
+        res.send({ errorMessage: err.message });
     }
 });
 
@@ -106,11 +102,7 @@ router.get("/new", async (req, res) => {
 
 // GET detail
 router.get("/detail/:id", async (req, res) => {
-    let user;
-
-    if(typeof req.user !== 'undefined') {
-        user = req.user
-    }
+    const user = req.user != null ? req.user : undefined
 
     try {
         const product = await Product.findById(req.params.id)
@@ -145,13 +137,15 @@ router.get("/detail/:id", async (req, res) => {
             product.averageScore /= product.review.length
         }
 
-        // console.log(product)
+        if (req.query.json) {
+            res.status(200).send(product)
+        } else {
+            res.render("books/detail", {
+                product: product,
+                user: user,
+            });
+        }
 
-        res.render("books/detail", {
-            // book: book,
-            product: product,
-            user: user,
-        });
     } catch (err) {
         res.send({ message: err.message });
     }
@@ -197,19 +191,24 @@ router.get("/detail/:id/edit", async (req, res) => {
 });
 
 
-// // GET Edit price
-// router.get("/detail/:id/")
-
 // Create
-router.post("/new", async (req, res) => {
-    let user;
+router.post("/new", upload.single('img'), async (req, res) => {
+    const user = req.user != null ? req.user : undefined
 
-    if(typeof req.user !== 'undefined') {
-        user = req.user
-    }
+
+    // console.log(JSON.stringify(req.headers))
+    console.log(JSON.stringify(req.body))
 
 
     const isbn = { isbn10: req.body.isbn10, isbn13: req.body.isbn13 };
+
+    validateObjectId(Author, req.body.author)
+    validateObjectId(Language, req.body.language)
+    validateObjectId(BookGenre, req.body.genre)
+    validateObjectId(BookCover, req.body.coverType)
+    validateObjectId(Publisher, req.body.publisher)
+
+
     const book = await new Book({
         title: req.body.title,
         pageCount: req.body.pageCount,
@@ -218,7 +217,7 @@ router.post("/new", async (req, res) => {
         language: req.body.language,
         genre: req.body.genre,
         coverType: req.body.coverType,
-        publishDate: new Date(req.body.publishDate).toISOString().split('T')[0],
+        publishDate: new Date(req.body.publishDate).toISOString(),
         publisher: req.body.publisher,
         isbn: isbn,
     });
@@ -229,11 +228,19 @@ router.post("/new", async (req, res) => {
         price: req.body.price,
     });
 
-    saveImg(book, req.body.img);
+
+    if(req.file) {
+        book.image = new Buffer.from(req.file.buffer, 'base64')
+        book.imageType = req.file.mimetype
+    } else {
+        saveImg(book, req.body.img);
+    }
+
 
     try {
         await book.save()
         await product.save()
+
         res.redirect("/books");
     } catch (err) {
         const authors = await Author.find({});
@@ -326,15 +333,44 @@ router.put("/detail/:id/edit", async (req, res) => {
 });
 
 
+// Add new review
+router.post("detail/:id/new-review", checkAuthenticated, async(req, res) => {
+    const review = await new Review({
+        product: req.params.id,
+        review: req.body.review,
+        reviewer: req.user._id,
+        ratedScore: req.body.ratedScore,
+    })
+
+    try {
+
+    const product = await Product.findById(req.params.id)
+    product.review.push(review.id)
+
+
+    await review.save()
+    await product.save()
+
+
+    res.status(201).send({infoMessage: "Your review have been posted successfully."})
+    } catch (err) {
+        res.send(err)
+    }
+})
 
 
 // Delete
 router.delete("/detail/:id", async (req, res) => {
-    let author;
+    let product;
     try {
-        author = await Book.findById(req.params.id);
-        await author.deleteOne();
-        res.redirect("/books");
+        product = await Product.findById(req.params.id);
+        await product.deleteOne();
+
+        if (req.query.json) {
+            res.status(200).send("Successful delete")
+        } else {
+            res.redirect("/books");
+        }
     } catch (err) {
         res.send({ error: err.message });
     }
@@ -384,5 +420,25 @@ function saveImg(book, imgEncoded) {
         book.imageType = img.type;
     }
 }
+
+
+async function validateObjectId(model, id) {
+    if (ObjectId.isValid(id) && String(new ObjectId(id)) === id) {
+        const list = await model.find({id: id})
+        if (list.length > 0) return
+        return new Error("The item associated with this ID doesn't exist")
+    } else {
+        return new Error("Invalid Id.")
+    }
+}
+
+
+function checkAuthenticated(req, res, next) {
+    if (!req.user) {
+        return res.status(401).send({errorMessage: "Not logged in."})
+    }
+    next()
+}
+
 
 module.exports = router;

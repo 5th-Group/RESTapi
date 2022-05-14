@@ -2,17 +2,21 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
-const passport = require("passport");
+const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const swaggerUI = require("swagger-ui-express")
+const swaggerDocs = require("./api/swagger/swagger.json")
 const authenticatedOrGuest = require("./auth/authenticatedOrGuest");
 require("dotenv").config();
 require("./auth/auth");
 
 
+
 // Connect to db
-mongoose.connect(process.env.DB_URL, { useNewUrlParser: true });
+const DB = "mongodb+srv://admin:4p9mpZugYoAL5F3z@cluster0.j8vge.mongodb.net/SwiftLib?retryWrites=true&w=majority"
+mongoose.connect(process.env.DB_URL || DB, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on("error", (error) => console.log(error));
 db.once("open", () => console.log("Connected to database"));
@@ -28,6 +32,7 @@ const countryRouter = require("./routes/countries");
 const bookCoverRouter = require("./routes/bookCover");
 const bookGenreRouter = require("./routes/bookGenre");
 const languageRouter = require("./routes/language");
+const orderRouter = require("./routes/orders")
 const apiRouter = require("./routes/api");
 
 
@@ -38,22 +43,30 @@ app.set("layout", "layouts/layout");
 app.use(expressLayouts);
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
-app.use(express.urlencoded({ extended: false, limit: "10mb" }));
+app.use(express.urlencoded({ extended: false, limit: "10mb", parameterLimit: 1000000000000 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors())
+
+
+// Configuring Swagger Options
+const swaggerOpts = {
+    explorer: true
+}
 
 
 // Routing
 app.use("/", authenticatedOrGuest, indexRouter);
+app.use("/api", authenticatedOrGuest, apiRouter);
 app.use("/authors", authenticatedOrGuest, authorRouter);
 app.use("/books", authenticatedOrGuest, bookRouter);
-app.use("/genres", authenticatedOrGuest, bookGenreRouter);
-app.use("/publishers", authenticatedOrGuest, publisherRouter);
 app.use("/countries", authenticatedOrGuest, countryRouter);
 app.use("/covers", authenticatedOrGuest, bookCoverRouter);
+app.use("/genres", authenticatedOrGuest, bookGenreRouter);
 app.use("/languages", authenticatedOrGuest, languageRouter);
-app.use("/api", authenticatedOrGuest, apiRouter);
-
+app.use("/orders", authenticatedOrGuest, orderRouter);
+app.use("/publishers", authenticatedOrGuest, publisherRouter);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, swaggerOpts));
 
 // port
 const port = process.env.PORT || 3000;

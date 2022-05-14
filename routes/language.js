@@ -5,19 +5,26 @@ const Language = require("../models/language");
 
 // GET ALL
 router.get("/", async (req, res) => {
+    const user = req.user != null ? req.user : undefined
+
     let searchDetail = {};
     if (req.query.name != null && req.query.name != "") {
         searchDetail.name = new RegExp(req.body.name, "i");
     }
+
     try {
         const languages = await Language.find(searchDetail);
-        res.render("languages/index", {
-            languages: languages,
-            searchDetail: req.body,
-            isAuthenticated: req.isAuthenticated(),
-        });
+        if (req.query.json) {
+            res.status(200).send(languages)
+        } else {
+            res.render("languages/index", {
+                languages: languages,
+                searchDetail: req.body,
+                user: user,
+            });
+        }
     } catch (err) {
-        console.log(err.message);
+        res.send(err)
     }
 });
 

@@ -16,11 +16,9 @@ router.get("/", async (req, res) => {
     let searchDetail = {};
     if (req.query.title != null && req.query.title != "") {
         searchDetail.title = new RegExp(req.query.title, "i");
-        // searchDetail.title = req.query.title
     }
 
     try {
-        // console.log(searchDetail.title)
         const products = await Product.find({})
         .lean({getters: true})
         .populate({
@@ -38,9 +36,6 @@ router.get("/", async (req, res) => {
 
         for (i = 0; i < products.length; i++) {
             products[i].detail.icon = parseImg(productsIcon[i].detail.image, productsIcon[i].detail.imageType);
-
-            // delete product.detail.image;
-            // delete product.detail.imageType;
         }
 
 
@@ -57,30 +52,16 @@ router.get("/", async (req, res) => {
             }
         }
 
-        
+
         const data = products.filter((product) => product.detail.title.match(searchDetail.title))
 
-        res.json(data)
+        res.status(200).send({infoMessage: "Get products successfully", data: data})
 
 
     } catch (err) {
         res.send(err);
     }
 });
-
-// router.get("/update", async (req, res) => {
-//     try {
-//         const books = await Book.find({});
-//         books.forEach(async (book) => {
-//             let product = await new Product();
-//             product.detail = book.id;
-//             await product.save();
-//         });
-//         res.redirect("/")
-//     } catch (error) {
-//         console.log(error);
-//     }
-// });
 
 
 router.get("/product/:id", async(req, res) => {
@@ -119,7 +100,7 @@ router.get("/product/:id", async(req, res) => {
         }
 
 
-        res.json(product)
+        res.status(200).send({infoMessage: "Get product successfully", product: product})
 
 
     } catch (err) {

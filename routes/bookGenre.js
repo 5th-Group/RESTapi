@@ -5,11 +5,7 @@ const BookGenre = require("../models/bookGenre");
 
 // GET ALL
 router.get("/", async (req, res) => {
-    let user;
-
-    if (typeof req.user !== 'undefined') {
-        user = req.user
-    }
+    const user = req.user != null ? req.user : undefined
 
     let searchDetail = {};
     if (req.query.name != null && req.query.name != "") {
@@ -18,6 +14,9 @@ router.get("/", async (req, res) => {
     try {
         const bookGenres = await BookGenre.find(searchDetail);
 
+        if (req.query.json) {
+            return res.status(200).send(bookGenres)
+        }
 
         res.render("books/genres/index", {
             bookGenres: bookGenres,
@@ -31,11 +30,7 @@ router.get("/", async (req, res) => {
 
 // GET NEW
 router.get("/new", async (req, res) => {
-    let user;
-
-    if (typeof req.user !== 'undefined') {
-        user = req.user
-    }
+    const user = req.user != null ? req.user : undefined
     
     try {
         const bookGenre = await new BookGenre();
@@ -44,17 +39,13 @@ router.get("/new", async (req, res) => {
             user: user,
         });
     } catch (err) {
-        console.log(err.message);
+        res.send(err.message);
     }
 });
 
 // POST
 router.post("/new", async (req, res) => {
-    let user;
-
-    if (typeof req.user !== 'undefined') {
-        user = req.user
-    }
+    const user = req.user != null ? req.user : undefined
 
     const bookGenre = await new BookGenre({
         name: req.body.name,

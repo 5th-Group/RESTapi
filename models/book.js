@@ -1,6 +1,7 @@
 // Dependencies
 const mongoose = require("mongoose");
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals')
+const Product = require("./product")
 
 const bookSchema = new mongoose.Schema({
     title: {
@@ -83,6 +84,18 @@ bookSchema.pre('save', {document: true}, function(next) {
     } else {
         next()
     }
+})
+
+bookSchema.pre('deleteOne', {document: true}, function(next){
+    Product.find({detail: this._id}, (err, products) => {
+        if (err) {
+            next(err)
+        } else if (products.length > 0) {
+            next(new Error("The operation has been cancled because there are product still referencing this book."))
+        } else {
+            next()
+        }
+    })
 })
 
 bookSchema.plugin(mongooseLeanVirtuals)

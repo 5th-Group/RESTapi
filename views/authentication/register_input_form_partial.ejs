@@ -40,11 +40,7 @@
     <label>Country</label>
     <select name="country">
         <% countries.forEach( country => { %> 
-            <% if (country._id === user.country) { %>
-                <option selected label="<%= country.name %>" value="<%= country._id %>"></option>
-            <% } else { %>
-                <option label="<%= country.name %>" value="<%= country._id %>"></option>
-            <% } %> 
+            <option label="<%= country.name %>" value="<%= country._id %>"></option>
         <% }) %>
     </select>
 </div>

@@ -4,17 +4,24 @@ const Author = require("../models/authors");
 
 // Getting all
 router.get("/", async (req, res) => {
+    const user = req.user != null ? req.user : undefined
+
     let searchDetail = {};
     if (req.query.name != null && req.query.name != "") {
         searchDetail.name = new RegExp(req.query.name, "i");
     }
     try {
         const authors = await Author.find(searchDetail);
-        res.render("authors/index", {
-            authors: authors,
-            searchDetail: req.query,
-            isAuthenticated: req.isAuthenticated(),
-        });
+
+        if (req.query.json) {
+            res.status(200).send(authors)
+        } else {
+            res.render("authors/index", {
+                authors: authors,
+                searchDetail: req.query,
+                user: user,
+            });
+        }
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
