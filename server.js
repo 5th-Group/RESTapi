@@ -15,7 +15,7 @@ require("./auth/auth");
 
 
 // Connect to db
-const DB = "mongodb+srv://admin:4p9mpZugYoAL5F3z@cluster0.j8vge.mongodb.net/SwiftLib?retryWrites=true&w=majority"
+const DB = "#"
 mongoose.connect(process.env.DB_URL || DB, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on("error", (error) => console.log(error));
